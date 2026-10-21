@@ -1,0 +1,30 @@
+name: UER P1 source build and SQLite contracts (NOT release approval)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'source/**'
+      - 'tests/**'
+      - '.github/workflows/uer-p1-source-build.yml'
+
+jobs:
+  source-build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore source
+        run: dotnet restore source/blackwolf-uer-v0.1.1-reliability/src/Uer.Api/Uer.Api.csproj
+      - name: Build UER (Release)
+        run: dotnet build source/blackwolf-uer-v0.1.1-reliability/src/Uer.Api/Uer.Api.csproj --configuration Release --no-restore
+      - name: Store-level contracts (not Docker acceptance)
+        run: dotnet run --project tests/Uer.Api.StoreContracts/Uer.Api.StoreContracts.csproj --configuration Release
+      - name: Explicit release block
+        run: |
+          echo "UER: build and SQLite contracts do NOT verify 10 Docker acceptance tests"
+          echo "production_ready=false"
