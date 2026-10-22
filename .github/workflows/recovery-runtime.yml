@@ -1,7 +1,7 @@
 name: Recovery Runtime source verification (non-release)
 on:
   push:
-    branches: ['recovery/runtime-original-2026-10-22']
+    branches: ['main', 'recovery/runtime-original-2026-10-22']
     paths:
       - 'components/runtime/**'
       - '.github/workflows/recovery-runtime.yml'
