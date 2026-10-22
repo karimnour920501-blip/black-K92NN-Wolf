@@ -1,0 +1,244 @@
+--- UER_v0.1.1_PreviousLifecyclePatch/Program.cs
++++ UER_v0.1.1_P1_Hardening/Program.cs
+@@ -180,12 +180,26 @@
+         tx.Commit();return true;
+     } }
+     public bool Quarantine(AttemptInfo a,string reason)=>Reconcile(a,RecoveryDecision.InsufficientEvidence,reason);
++    // The cleanup absence observation is appended atomically with the currently fenced
++    // job/attempt snapshot; it does not claim immunity against changes outside SQLite.
++    public bool RecordCleanupEvidence(AttemptInfo a) { lock(gate) {
++        using var c=Open();using var tx=c.BeginTransaction();
++        var current=PreviousState(c,tx,a);
++        if(current.job is not ("claimed" or "container_created" or "running") || current.job!=current.attempt)return false;
++        AppendLifecycle(c,tx,a.JobId,a.AttemptId,a.Epoch,current.job,current.job,
++                        current.attempt,current.attempt,"container_absence_verified");
++        tx.Commit();return true;
++    } }
+     // Final state and audit append commit or roll back together.
+     public bool Complete(AttemptInfo attempt,string project,string manifest,string image,string started,string finished,int exit,string artifact,string? error) {
+       lock(gate) { using var c=Open(); using var tx=c.BeginTransaction(); using var cmd=c.CreateCommand();cmd.Transaction=tx;
+         cmd.CommandText="SELECT status FROM jobs WHERE id=$id AND attempt=$epoch AND attempt_id=$aid AND EXISTS(SELECT 1 FROM attempts WHERE attempt_id=$aid AND job_id=$id AND epoch=$epoch AND state='running')";
+         cmd.Parameters.AddWithValue("$id",attempt.JobId);cmd.Parameters.AddWithValue("$epoch",attempt.Epoch);cmd.Parameters.AddWithValue("$aid",attempt.AttemptId);
+         if((string?)cmd.ExecuteScalar()!="running")return false;
++        // A passed/failed terminal result is forbidden unless Docker absence was observed
++        // and the cleanup observation was durably appended to this attempt's lifecycle.
++        cmd.CommandText="SELECT COUNT(*) FROM lifecycle_audit WHERE job_id=$id AND attempt_id=$aid AND epoch=$epoch AND evidence='container_absence_verified'";
++        if(Convert.ToInt64(cmd.ExecuteScalar())!=1)return false;
+         cmd.CommandText="SELECT record_hash FROM ledger ORDER BY seq DESC LIMIT 1";
+         var prev=(string?)cmd.ExecuteScalar()??new string('0',64);
+         var fields=new[]{attempt.JobId,project,manifest,image,started,finished,exit.ToString(CultureInfo.InvariantCulture),artifact,prev};
+@@ -269,41 +283,130 @@
+     static async Task<(int,string)> Exec(string file,IEnumerable<string> args,int seconds,CancellationToken ct){using var p=new Process{StartInfo=new ProcessStartInfo(file){RedirectStandardError=true,RedirectStandardOutput=true,UseShellExecute=false,CreateNoWindow=true}};foreach(var a in args)p.StartInfo.ArgumentList.Add(a);p.Start();using var timer=CancellationTokenSource.CreateLinkedTokenSource(ct);timer.CancelAfter(TimeSpan.FromSeconds(seconds));// Drain pipes continuously with bounded retention to avoid unbounded memory.
+         static async Task<string> Drain(StreamReader reader) { var buf=new char[4096]; var kept=new StringBuilder(); int n; while((n=await reader.ReadAsync(buf))>0) { if(kept.Length<500_000)kept.Append(buf,0,Math.Min(n,500_000-kept.Length)); } return kept.ToString(); }
+         var stdout=Drain(p.StandardOutput);var stderr=Drain(p.StandardError);try{await p.WaitForExitAsync(timer.Token);}catch(OperationCanceledException) { try{p.Kill(entireProcessTree:true);}catch{} if(ct.IsCancellationRequested)throw;throw new TimeoutException("Process timeout"); }return(p.ExitCode,(await stdout)+(await stderr));}
+-    public async Task Execute(AttemptInfo attempt,CancellationToken ct){var id=attempt.JobId;var job=db.Job(id)!;var src=Path.Combine(root,"jobs",id,"source");var output=Path.Combine(root,"jobs",id,"output");Directory.CreateDirectory(output);var start=DateTimeOffset.UtcNow.ToString("O");var image="unresolved";var exit=-1;string? error=null;var manifestHash="missing";var artifact="missing";
+-      try{
+-        var path=Path.Combine(src,"uer.json");var m=ReadManifest(path);manifestHash=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant();
+-        var tag=m.Runtime=="python"?Environment.GetEnvironmentVariable("UER_PYTHON_IMAGE"):Environment.GetEnvironmentVariable("UER_NODE_IMAGE");
+-        if(string.IsNullOrWhiteSpace(tag) || !System.Text.RegularExpressions.Regex.IsMatch(tag, @"^[a-zA-Z0-9./_-]+@sha256:[0-9a-f]{64}$"))throw new InvalidOperationException("Set pinned UER_PYTHON_IMAGE / UER_NODE_IMAGE to repository@sha256:<64 hex>");
+-        var inspected=await Exec("docker",["image","inspect","--format","{{json .RepoDigests}}",tag],20,ct);
+-        if(inspected.Item1!=0)throw new InvalidOperationException("Image unavailable: pull "+tag);
+-        image=tag;
+-        var name=attempt.ContainerName;var command=m.Runtime=="python"?new[]{"python","-m","unittest","discover","-s","tests","-v"}:new[]{"node","--test"};
+-        var args=new List<string>{"create","--name",name,"--label","blackwolf.uer=true","--label","blackwolf.job_id="+id,"--label","blackwolf.attempt_id="+attempt.AttemptId,"--label","blackwolf.execution_epoch="+attempt.Epoch.ToString(CultureInfo.InvariantCulture),"--network","none","--read-only","--cap-drop","ALL","--security-opt","no-new-privileges","--pids-limit","64","--memory",m.MemoryMb+"m","--cpus",m.Cpu.ToString(System.Globalization.CultureInfo.InvariantCulture),"--tmpfs","/tmp:rw,noexec,nosuid,size=32m","--user","65534:65534","--mount",$"type=bind,source={src},target=/work,readonly","--env","PYTHONPATH=/work","--workdir","/work",image};args.AddRange(command);
++    // Only remove the container whose NAME and Docker labels match the durable attempt.
++    // No Docker CLI failure or ambiguous output may be interpreted as verified absence.
++    public static async Task<bool> ContainerPresent(AttemptInfo a,CancellationToken ct) {
++        var named=await Exec("docker",["ps","-a","--filter","name=^/"+a.ContainerName+"$","--format","{{.Names}}"],20,ct);
++        if(named.Item1!=0)throw new InvalidOperationException("Docker name enumeration unavailable: "+named.Item2);
++        var labelled=await Exec("docker",["ps","-a","--filter","label=blackwolf.attempt_id="+a.AttemptId,"--format","{{.Names}}"],20,ct);
++        if(labelled.Item1!=0)throw new InvalidOperationException("Docker attempt-label enumeration unavailable: "+labelled.Item2);
++        string[] ParseNames(string output) => output.Split('\n',StringSplitOptions.RemoveEmptyEntries|StringSplitOptions.TrimEntries);
++        var nameRows=ParseNames(named.Item2);var labelRows=ParseNames(labelled.Item2);
++        if(nameRows.Any(n=>n!=a.ContainerName) || labelRows.Any(n=>n!=a.ContainerName))
++            throw new InvalidOperationException("Docker container name/attempt-label identity mismatch");
++        var byName=nameRows.Length==1;var byLabel=labelRows.Length==1;
++        if(byName!=byLabel)throw new InvalidOperationException("Docker name and label listings disagree");
++        if(!byName)return false;
++        var inspected=await Exec("docker",["inspect","--format","{{json .Config.Labels}}",a.ContainerName],20,ct);
++        if(inspected.Item1!=0)throw new InvalidOperationException("Docker identity inspection failed: "+inspected.Item2);
++        using var json=JsonDocument.Parse(inspected.Item2.Trim());
++        var labels=json.RootElement;
++        bool Matches(string key,string expected)=>
++            labels.TryGetProperty(key,out var v) && v.ValueKind==JsonValueKind.String && v.GetString()==expected;
++        if(labels.ValueKind!=JsonValueKind.Object
++           || !Matches("blackwolf.uer","true")
++           || !Matches("blackwolf.job_id",a.JobId)
++           || !Matches("blackwolf.attempt_id",a.AttemptId)
++           || !Matches("blackwolf.execution_epoch",a.Epoch.ToString(CultureInfo.InvariantCulture)))
++            throw new InvalidOperationException("Docker inspected labels do not match committed attempt identity");
++        return true;
++    }
++    public static async Task CleanupContainer(AttemptInfo a,CancellationToken ct) {
++        if(await ContainerPresent(a,ct)) {
++            var result=await Exec("docker",["rm","-f",a.ContainerName],20,ct);
++            if(result.Item1!=0)throw new InvalidOperationException("Docker remove failed: "+result.Item2);
++        }
++        if(await ContainerPresent(a,ct))
++            throw new InvalidOperationException("Docker container absence is not confirmed");
++    }
++    private static void WriteFailureEvidence(string output,Exception ex) {
++        try { Directory.CreateDirectory(output);File.WriteAllText(Path.Combine(output,"failure.txt"),
++                DateTimeOffset.UtcNow.ToString("O")+"\n"+ex.GetType().Name+": "+ex.Message); }
++        catch (Exception io) { Console.Error.WriteLine("Failure evidence write failed: "+io.Message); }
++    }
++    private void QuarantineFailClosed(AttemptInfo a,string reason) {
++        // Do not suppress persistence errors. If we cannot persist quarantine, the worker
++        // must STOP, not move on to processing the next queued operation.
++        if(!db.Quarantine(a,reason)) {
++            var state=db.Job(a.JobId)?.Status;
++            if(state!="quarantined")throw new InvalidOperationException(
++                "FATAL: cannot persist quarantine for attempt "+a.AttemptId+"; current job state "+state);
++        }
++    }
++    public async Task Execute(AttemptInfo attempt,CancellationToken ct) {
++        var id=attempt.JobId;
++        var job=db.Job(id)??throw new InvalidOperationException("Claimed job missing");
++        var src=Path.Combine(root,"jobs",id,"source");
++        var output=Path.Combine(root,"jobs",id,"output");
++        Directory.CreateDirectory(output);
++        var start=DateTimeOffset.UtcNow.ToString("O");
++        var image="unresolved";var exit=-1;
++        var manifestHash="missing";var artifact="missing";
+         try {
+-          var created=await Exec("docker",args,30,ct);
+-          if(created.Item1!=0)throw new InvalidOperationException("Docker create failed or uncertain: "+created.Item2);
+-          if(!db.MarkContainerCreated(attempt))throw new InvalidOperationException("Container-created transition rejected");
+-          // docker start returning does not mean the SQLite RUNNING transition has committed.
+-          // A crash in that gap is recovered fail-closed using the precommitted container name.
+-          var started=await Exec("docker",["start",name],30,ct);
+-          if(started.Item1!=0)throw new InvalidOperationException("Docker start failed or uncertain: "+started.Item2);
+-          if(!db.MarkRunning(attempt))throw new InvalidOperationException("Running transition rejected");
+-          var waited=await Exec("docker",["wait",name],m.TimeoutSeconds,ct);
+-          if(waited.Item1!=0||!int.TryParse(waited.Item2.Trim(),out exit))throw new InvalidOperationException("Docker wait result unverified: "+waited.Item2);
+-          var logs=await Exec("docker",["logs",name],20,ct);
+-          if(logs.Item1!=0)throw new InvalidOperationException("Docker logs unavailable: "+logs.Item2);
+-          File.WriteAllText(Path.Combine(output,"test.log"),logs.Item2.Length>1_000_000?logs.Item2[..1_000_000]:logs.Item2);
+-        }
+-        catch(OperationCanceledException) when(ct.IsCancellationRequested){throw;}
+-        finally {
+-          try { var cleanup=await Exec("docker",["rm","-f",name],15,CancellationToken.None);if(cleanup.Item1!=0)throw new InvalidOperationException("Docker cleanup returned nonzero");
+-            var verify=await Exec("docker",["ps","-a","--filter","name=^/"+name+"$","--format","{{.Names}}"],15,CancellationToken.None);
+-            if(verify.Item1!=0||verify.Item2.Split('\n',StringSplitOptions.RemoveEmptyEntries).Any(x=>x.Trim()==name))throw new InvalidOperationException("Container absence not confirmed");
+-          }catch(Exception ex){db.Quarantine(attempt,"Container cleanup unverified: "+ex.Message);throw;}
+-        }
+-        artifact=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(output,"test.log")))).ToLowerInvariant();
+-      }catch(OperationCanceledException) when(ct.IsCancellationRequested){db.Quarantine(attempt,"Service shutdown interrupted attempt; reconciliation required");throw;}catch(Exception ex){error=ex.Message;File.WriteAllText(Path.Combine(output,"error.txt"),error);artifact=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(output,"error.txt")))).ToLowerInvariant();}
+-      var finish=DateTimeOffset.UtcNow.ToString("O");if(!db.Complete(attempt,job.Project,manifestHash,image,start,finish,exit,artifact,error))Console.Error.WriteLine($"Stale result rejected: {attempt.AttemptId}");
++            var path=Path.Combine(src,"uer.json");
++            var m=ReadManifest(path);
++            manifestHash=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant();
++            var tag=m.Runtime=="python"?Environment.GetEnvironmentVariable("UER_PYTHON_IMAGE"):Environment.GetEnvironmentVariable("UER_NODE_IMAGE");
++            if(string.IsNullOrWhiteSpace(tag)
++               || !System.Text.RegularExpressions.Regex.IsMatch(tag, @"^[a-zA-Z0-9./_-]+@sha256:[0-9a-f]{64}$"))
++                throw new InvalidOperationException("Pinned UER image digest required");
++            var inspected=await Exec("docker",["image","inspect","--format","{{json .RepoDigests}}",tag],20,ct);
++            if(inspected.Item1!=0)throw new InvalidOperationException("Pinned Docker image unavailable: "+inspected.Item2);
++            image=tag;
++            var name=attempt.ContainerName;
++            var command=m.Runtime=="python"
++                ?new[]{"python","-m","unittest","discover","-s","tests","-v"}
++                :new[]{"node","--test"};
++            var args=new List<string>{
++                "create","--name",name,
++                "--label","blackwolf.uer=true",
++                "--label","blackwolf.job_id="+id,
++                "--label","blackwolf.attempt_id="+attempt.AttemptId,
++                "--label","blackwolf.execution_epoch="+attempt.Epoch.ToString(CultureInfo.InvariantCulture),
++                "--network","none","--read-only","--cap-drop","ALL",
++                "--security-opt","no-new-privileges","--pids-limit","64",
++                "--memory",m.MemoryMb+"m","--cpus",m.Cpu.ToString(CultureInfo.InvariantCulture),
++                "--tmpfs","/tmp:rw,noexec,nosuid,size=32m","--user","65534:65534",
++                "--mount",$"type=bind,source={src},target=/work,readonly",
++                "--env","PYTHONPATH=/work","--workdir","/work",image
++            };
++            args.AddRange(command);
++            try {
++                var created=await Exec("docker",args,30,ct);
++                if(created.Item1!=0)throw new InvalidOperationException("Docker create failed/uncertain: "+created.Item2);
++                if(!db.MarkContainerCreated(attempt))throw new InvalidOperationException("container_created fencing rejected");
++                var started=await Exec("docker",["start",name],30,ct);
++                if(started.Item1!=0)throw new InvalidOperationException("Docker start failed/uncertain: "+started.Item2);
++                if(!db.MarkRunning(attempt))throw new InvalidOperationException("running fencing rejected");
++                var waited=await Exec("docker",["wait",name],m.TimeoutSeconds,ct);
++                if(waited.Item1!=0||!int.TryParse(waited.Item2.Trim(),out exit))
++                    throw new InvalidOperationException("Docker wait result unverified: "+waited.Item2);
++                var logs=await Exec("docker",["logs",name],20,ct);
++                if(logs.Item1!=0)throw new InvalidOperationException("Docker logs unavailable: "+logs.Item2);
++                var logPath=Path.Combine(output,"test.log");
++                File.WriteAllText(logPath,logs.Item2.Length>1_000_000?logs.Item2[..1_000_000]:logs.Item2);
++                artifact=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(logPath))).ToLowerInvariant();
++            }
++            finally {
++                // Cleanup is mandatory after any create attempt, including uncertain create.
++                // Identity must be checked BEFORE removal and absence confirmed AFTER.
++                await CleanupContainer(attempt,CancellationToken.None);
++                if(!db.RecordCleanupEvidence(attempt))
++                    throw new InvalidOperationException("Failed to commit cleanup observation in lifecycle audit");
++            }
++            var finish=DateTimeOffset.UtcNow.ToString("O");
++            if(!db.Complete(attempt,job.Project,manifestHash,image,start,finish,exit,artifact,null))
++                throw new InvalidOperationException("Fenced or stale result; completion rejected");
++        }
++        catch(OperationCanceledException ex) when(ct.IsCancellationRequested) {
++            WriteFailureEvidence(output,ex);
++            QuarantineFailClosed(attempt,"Service cancellation; effects are unverified");
++            throw;
++        }
++        catch(Exception ex) {
++            WriteFailureEvidence(output,ex);
++            QuarantineFailClosed(attempt,"Execution/cleanup evidence incomplete: "+ex.GetType().Name+": "+ex.Message);
++        }
+     }
+ }
+ sealed class Worker : BackgroundService {
+@@ -314,20 +417,10 @@
+   foreach(var a in db.InterruptedAttempts()) {
+    if(stoppingToken.IsCancellationRequested)return;
+    try {
+-    // Docker errors must never be interpreted as absence of a container.
+-    var check=await Runner.DockerCommand(["ps","-a","--filter","label=blackwolf.attempt_id="+a.AttemptId,"--format","{{.ID}} {{.Names}}"],20,stoppingToken);
+-    if(check.Item1!=0)throw new InvalidOperationException("Docker enumeration failed");
+-    var rows=check.Item2.Split('\n',StringSplitOptions.RemoveEmptyEntries);
+-    if(rows.Any(row=>!row.Trim().EndsWith(" "+a.ContainerName,StringComparison.Ordinal)))throw new InvalidOperationException("Container identity mismatch");
+-    // Also inspect the preselected name: a crash can occur before labels become visible.
+-    var named=await Runner.DockerCommand(["ps","-a","--filter","name=^/"+a.ContainerName+"$","--format","{{.Names}}"],20,stoppingToken);
+-    if(named.Item1!=0)throw new InvalidOperationException("Docker name lookup failed");
+-    if(rows.Length>0||named.Item2.Split('\n',StringSplitOptions.RemoveEmptyEntries).Any(x=>x.Trim()==a.ContainerName)) {
+-      var removed=await Runner.DockerCommand(["rm","-f",a.ContainerName],20,stoppingToken);
+-      if(removed.Item1!=0)throw new InvalidOperationException("Orphan removal failed");
+-    }
+-    var verify=await Runner.DockerCommand(["ps","-a","--filter","name=^/"+a.ContainerName+"$","--format","{{.Names}}"],20,stoppingToken);
+-    if(verify.Item1!=0||verify.Item2.Split('\n',StringSplitOptions.RemoveEmptyEntries).Any(x=>x.Trim()==a.ContainerName))throw new InvalidOperationException("Termination not confirmed");
++    // Recovery checks both the reserved name and committed labels.
++    // Never remove a container whose identity is not proven.
++    await Runner.CleanupContainer(a,stoppingToken);
++    // No retry permitted even when removal succeeds.
+     // Absence of a container proves neither non-execution nor absence of external effects.
+     // No trusted completion receipt or retry-safety attestation exists in v0.1.1.
+     // Therefore this recovery path MUST fail closed even after verified container removal.
+@@ -335,7 +428,11 @@
+     if(!db.Reconcile(a,decision,"Recovery: container no longer visible; execution effects remain unverified"))
+       throw new InvalidOperationException("Recovery transition rejected by fencing");
+    }catch(OperationCanceledException) when(stoppingToken.IsCancellationRequested){return;}
+-    catch(Exception e){db.Quarantine(a,"Recovery blocked: "+e.Message);Console.Error.WriteLine($"Quarantined {a.JobId}: {e.Message}");}
++    catch(Exception e){
++      if(!db.Quarantine(a,"Recovery blocked: "+e.Message) && db.Job(a.JobId)?.Status!="quarantined")
++        throw new InvalidOperationException("FATAL: recovery quarantine could not be persisted",e);
++      Console.Error.WriteLine($"Quarantined {a.JobId}: {e.Message}");
++    }
+   }
+   while(!stoppingToken.IsCancellationRequested){
+    foreach(var id in db.Pending()){
+@@ -343,7 +440,10 @@
+     var attempt=db.TryClaim(id);if(attempt is null)continue;
+     try{await runner.Execute(attempt,stoppingToken);}
+     catch(OperationCanceledException) when(stoppingToken.IsCancellationRequested){return;}
+-    catch(Exception e){db.Quarantine(attempt,"Unexpected worker error: "+e.Message);}
++    catch(Exception e) {
++      if(!db.Quarantine(attempt,"Unexpected worker error: "+e.Message) && db.Job(attempt.JobId)?.Status!="quarantined")
++        throw new InvalidOperationException("FATAL: worker quarantine could not be persisted",e);
++    }
+    }
+    try{await Task.Delay(500,stoppingToken);}catch(OperationCanceledException){break;}
+   }
