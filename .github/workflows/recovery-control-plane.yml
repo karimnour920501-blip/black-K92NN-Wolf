@@ -1,0 +1,34 @@
+name: Recovery Control Plane tests (non-release)
+
+on:
+  push:
+    branches:
+      - recovery/source-2026-10-22
+    paths:
+      - 'components/control-plane/**'
+      - '.github/workflows/recovery-control-plane.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  control-plane:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify source files exist
+        run: |
+          test -f components/control-plane/control_plane/core.py
+          test -f components/control-plane/control_plane/server.py
+          test -f components/control-plane/tests/test_core.py
+          test -f components/control-plane/tests/test_control_plane.py
+      - name: Run Control Plane tests
+        working-directory: components/control-plane
+        run: python -m unittest discover -s tests -v
+      - name: Release remains blocked
+        if: always()
+        run: echo 'production_ready=false; integration and acceptance tests not verified'
