@@ -1,0 +1,48 @@
+{
+  "status": "inventory_only_not_uploaded",
+  "archive": "BLACK-K92N-WOLF-Recovery-Runtime-v0.2.1.zip",
+  "archive_sha256": "e4f52c1dfbe55edf1ca0c721c0fb8b034a00d3dc29b9254db26173f4350f60bd",
+  "files": [
+    {
+      "path": "components/control-plane/control_plane/core.py",
+      "sha256": "3f1d680590e11c73f75f69756ebbd4e2440d33f69b7528e0bcb65906ede15c70",
+      "uploaded": false
+    },
+    {
+      "path": "components/control-plane/control_plane/server.py",
+      "sha256": "78924b4b15138ea9d27d1fdffa28b73129b9ca6e2a2f7c16995e7f6ac4667044",
+      "uploaded": false
+    },
+    {
+      "path": "components/control-plane/control_plane/__init__.py",
+      "sha256": "3062066e9e8d9a33424fb076aacb5b93c0847cc6a1b97e1b95cb09e66a49ec96",
+      "uploaded": false
+    },
+    {
+      "path": "components/control-plane/cli.py",
+      "sha256": "bb76a049ade740482365bb59e4f3de239fe8991021944ac1d6ad7262f9a4ee88",
+      "uploaded": false
+    },
+    {
+      "path": "components/control-plane/tests/test_core.py",
+      "sha256": "2f8574cdd2ff78ab236e75a81b6c8330f38fc1cc470ef0c43b91e103f51186a9",
+      "uploaded": false
+    },
+    {
+      "path": "components/control-plane/tests/test_control_plane.py",
+      "sha256": "86fe583524726ee591cdcfcc65304d09ab330b11ac09989e4095903e4625e8a9",
+      "uploaded": false
+    },
+    {
+      "path": "components/runtime/runtime.py",
+      "sha256": "3284ad9be08243c5f142d7afcb7cc4e03b29f15a040014588d8e26cfe9050368",
+      "uploaded": false
+    },
+    {
+      "path": "components/runtime/tests/test_runtime.py",
+      "sha256": "8b4e522de4219734ee5f33c6671ea671ce1a1c0c3eadd339004d982302f1ed92",
+      "uploaded": false
+    }
+  ],
+  "notes": "Source hashes computed from original ZIP bytes. This manifest does not assert that sources have been committed or tested on GitHub."
+}
