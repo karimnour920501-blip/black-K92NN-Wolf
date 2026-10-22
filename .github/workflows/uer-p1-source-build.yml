@@ -44,7 +44,7 @@ jobs:
         if: always()
         env:
           CHECKOUT: ${{ steps.checkout.outcome }}
-          RESTORE: ${{ steps.restore.outcome }}
+          RESTORE: ${{ steps.dotnet.outcome == 'success' && steps.restore.outcome || steps.dotnet.outcome }}
           BUILD: ${{ steps.build.outcome }}
           TESTS: ${{ steps.tests.outcome }}
           COMMIT: ${{ github.sha }}
@@ -65,3 +65,18 @@ jobs:
         run: |
           echo "UER build and SQLite contracts do NOT verify Docker acceptance tests"
           echo "production_ready=false"
+      - name: Fail run when a required stage fails or is skipped
+        if: always()
+        env:
+          CHECKOUT: ${{ steps.checkout.outcome }}
+          DOTNET: ${{ steps.dotnet.outcome }}
+          RESTORE: ${{ steps.restore.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+        run: |
+          for stage in CHECKOUT DOTNET RESTORE BUILD TESTS; do
+            if [ "${!stage}" != "success" ]; then
+              echo "::error::${stage} ended with ${!stage}; see gates.json artifact for the truthful gate state."
+              exit 1
+            fi
+          done
