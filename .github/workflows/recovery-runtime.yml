@@ -1,0 +1,37 @@
+name: Recovery Runtime source verification (non-release)
+on:
+  push:
+    branches: ['recovery/runtime-original-2026-10-22']
+    paths:
+      - 'components/runtime/**'
+      - '.github/workflows/recovery-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify original archive SHA-256 per source
+        run: |
+          printf '%s\n' \
+            '3284ad9be08243c5f142d7afcb7cc4e03b29f15a040014588d8e26cfe9050368  components/runtime/runtime.py' \
+            '8b4e522de4219734ee5f33c6671ea671ce1a1c0c3eadd339004d982302f1ed92  components/runtime/tests/test_runtime.py' \
+            '79ea1f0aa047f245d239354eccce7ab1a2913a7a414689e77a4da437e57e5983  components/runtime/README.md' \
+            '53e374ed30b1672fb716194897abbd8474121f3473133fca227edbd9f1a4d63c  components/runtime/projects/example-site/index.html' | sha256sum --check
+      - name: Python compile
+        run: python -m py_compile components/runtime/runtime.py components/runtime/tests/test_runtime.py
+      - name: Runtime 5-test suite
+        working-directory: components/runtime
+        env:
+          PYTHONPATH: .
+        run: python -m unittest discover -s tests -v
+      - name: Release remains blocked
+        if: always()
+        run: echo "Runtime standalone tests do not verify production, integration, or distributed deployment; production_ready=false"
