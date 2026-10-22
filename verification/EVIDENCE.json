@@ -1,0 +1,64 @@
+{
+  "project": "BLACK-K92N-WOLF",
+  "component": "UER",
+  "base_version": "0.1.1",
+  "artifact_type": "P1_SOURCE_HARDENING_CANDIDATE",
+  "date_utc": "2026-10-20",
+  "architecture": "FROZEN",
+  "source_input": "Prior P1 lifecycle-audit patch bundled by this conversation",
+  "input_program_sha256": "ad59260d8fa61703dfb771a35786ae494f6878d406d23001c3a510d45c8722fd",
+  "output_program_sha256": "b4ca92644a3e34f1304b8fd9d60642be4f82e56cdfe27130934b1eded11db185",
+  "tests": {
+    "python_static_and_sqlite_engine_probes": {
+      "command": "python3 -m unittest discover -s verification -v",
+      "ran": 15,
+      "passed": 15,
+      "exit_code": 0,
+      "scope": "STATIC_SOURCE_AND_PYTHON_SQLITE_ONLY"
+    },
+    "shell_syntax": {
+      "command": "bash -n scripts/verify_on_isolated_host.sh",
+      "status": "PASS"
+    },
+    "dotnet_build": {
+      "status": "BLOCKED",
+      "reason": "dotnet SDK not installed"
+    },
+    "dotnet_store_contract_tests": {
+      "status": "NOT_RUN",
+      "defined": 9
+    },
+    "docker_integration": {
+      "status": "BLOCKED",
+      "reason": "Docker CLI not installed"
+    },
+    "official_uer_acceptance": {
+      "verified": 0,
+      "total": 10,
+      "status": "NOT_RUN"
+    },
+    "p1_controls": {
+      "verified": 0,
+      "total": 3,
+      "status": "NOT_RUN"
+    }
+  },
+  "source_changes": [
+    "docker name/labels identity verification before rm",
+    "cleanup absence verification after rm",
+    "cleanup observation atomically stored in lifecycle chain",
+    "Store.Complete blocked unless exactly one cleanup observation exists",
+    "fail-closed quarantine on ambiguous Docker results",
+    "stop processing if quarantine persistence fails",
+    "startup crash reconciliation uses same identity-checked cleanup"
+  ],
+  "release_approved": false,
+  "production_ready": false,
+  "release_decision": "BLOCKED",
+  "not_claimed": [
+    "C# compiled",
+    "Docker integration verified",
+    "crash recovery verified",
+    "hostile multi-tenant isolation proven"
+  ]
+}
