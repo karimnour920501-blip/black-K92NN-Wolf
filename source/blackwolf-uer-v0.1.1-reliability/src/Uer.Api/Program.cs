@@ -21,7 +21,7 @@ var app = builder.Build();
 // API is deliberately loopback-only for this local MVP.
 app.Use(async (ctx, next) => { if (ctx.Connection.RemoteIpAddress is not { } ip || !System.Net.IPAddress.IsLoopback(ip)) { ctx.Response.StatusCode = 403; return; } await next(); });
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
-app.MapGet("/projects", () => Results.Ok(Directory.Exists(projects) ? Directory.GetDirectories(projects).Select(Path.GetFileName).OrderBy(x => x) : []));
+app.MapGet("/projects", () => Results.Ok(Directory.Exists(projects) ? Directory.GetDirectories(projects).Select(Path.GetFileName).OrderBy(x => x).ToArray() : Array.Empty<string?>()));
 app.MapPost("/jobs", async (Submit req, Runner runner, CancellationToken ct) => {
     try { var id = await runner.Submit(req.Project, ct); return Results.Accepted($"/jobs/{id}", new { job_id = id }); }
     catch (Exception e) when (e is ArgumentException or InvalidOperationException) { return Results.BadRequest(new { error = e.Message }); }
