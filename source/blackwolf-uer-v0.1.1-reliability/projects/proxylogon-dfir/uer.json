@@ -1,0 +1,8 @@
+{
+  "project": "proxylogon-dfir",
+  "runtime": "python",
+  "operation": "test",
+  "timeoutSeconds": 90,
+  "memoryMb": 256,
+  "cpu": 1
+}

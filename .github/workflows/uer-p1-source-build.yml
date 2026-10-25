@@ -1,0 +1,108 @@
+name: UER P1 source build and SQLite contracts (NOT release approval)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'source/**'
+      - 'tests/**'
+      - '.github/workflows/uer-p1-source-build.yml'
+      - 'scripts/emit-gates.js'
+  push:
+    paths:
+      - 'source/**'
+      - 'tests/**'
+      - '.github/workflows/uer-p1-source-build.yml'
+      - 'scripts/emit-gates.js'
+
+jobs:
+  source-build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Restore repository source
+        id: checkout
+        uses: actions/checkout@v4
+        continue-on-error: true
+      - name: Set up .NET
+        id: dotnet
+        if: steps.checkout.outcome == 'success'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore UER source
+        id: restore
+        if: steps.checkout.outcome == 'success' && steps.dotnet.outcome == 'success'
+        continue-on-error: true
+        run: dotnet restore source/blackwolf-uer-v0.1.1-reliability/src/Uer.Api/Uer.Api.csproj
+      - name: Build UER (Release)
+        id: build
+        if: steps.restore.outcome == 'success'
+        continue-on-error: true
+        run: dotnet build source/blackwolf-uer-v0.1.1-reliability/src/Uer.Api/Uer.Api.csproj --configuration Release --no-restore
+      - name: Store-level contracts (not Docker acceptance)
+        id: tests
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: dotnet run --project tests/Uer.Api.StoreContracts/Uer.Api.StoreContracts.csproj --configuration Release
+      - name: Emit gates.json
+        if: always()
+        env:
+          CHECKOUT: ${{ steps.checkout.outcome }}
+          RESTORE: ${{ steps.dotnet.outcome == 'success' && steps.restore.outcome || steps.dotnet.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+          COMMIT: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
+          TIMESTAMP: ${{ github.event.head_commit.timestamp || github.run_started_at }}
+        run: node scripts/emit-gates.js
+      - name: Upload gate state
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gates-${{ github.run_id }}
+          path: gates.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Enforce production gate state
+        if: always()
+        run: |
+          echo "UER build and SQLite contracts do NOT verify Docker acceptance tests"
+          echo "production_ready=false"
+          node <<'NODE'
+          const fs = require('node:fs');
+          let state;
+          try {
+            state = JSON.parse(fs.readFileSync('gates.json', 'utf8'));
+          } catch (error) {
+            console.error('::error::Production gate state is missing or invalid; failing closed.');
+            process.exit(1);
+          }
+          const gates = Object.entries(state.gates || {});
+          const allVerified = gates.length > 0 && gates.every(([, gate]) =>
+            gate && gate.state === 'verified' &&
+            typeof gate.evidence === 'string' && gate.evidence.trim().length > 0
+          );
+          if (state.verified !== true || state.production_ready !== true || !allVerified) {
+            console.error('::error::Production gates are blocked or lack verified evidence; merge/release must remain blocked.');
+            process.exit(1);
+          }
+          NODE
+      - name: Fail run when a required stage fails or is skipped
+        if: always()
+        env:
+          CHECKOUT: ${{ steps.checkout.outcome }}
+          DOTNET: ${{ steps.dotnet.outcome }}
+          RESTORE: ${{ steps.restore.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+        run: |
+          for stage in CHECKOUT DOTNET RESTORE BUILD TESTS; do
+            if [ "${!stage}" != "success" ]; then
+              echo "::error::${stage} ended with ${!stage}; see gates.json artifact for the truthful gate state."
+              exit 1
+            fi
+          done
