@@ -1,0 +1,114 @@
+name: PAY CORE sandbox verification
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'pay-core/**'
+      - '.github/workflows/pay-core-ci.yml'
+  pull_request:
+    paths:
+      - 'pay-core/**'
+      - '.github/workflows/pay-core-ci.yml'
+permissions:
+  contents: read
+jobs:
+  sandbox-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pay-core
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: blackwolf_pay_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_postgres_only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd 'pg_isready -U postgres -d blackwolf_pay_test'
+          --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7.4-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd 'redis-cli ping | grep -q PONG'
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      POSTGRES_PASSWORD: ci_postgres_only
+      PAY_APP_PASSWORD: ci_runtime_only
+      PAY_MIGRATOR_PASSWORD: ci_migrator_only
+      DATABASE_URL: postgresql+psycopg://pay_runtime:ci_runtime_only@127.0.0.1:5432/blackwolf_pay_test
+      MIGRATOR_DATABASE_URL: postgresql+psycopg://pay_migrator:ci_migrator_only@127.0.0.1:5432/blackwolf_pay_test
+      TEST_DATABASE_URL: postgresql+psycopg://pay_runtime:ci_runtime_only@127.0.0.1:5432/blackwolf_pay_test
+      REDIS_URL: redis://127.0.0.1:6379/0
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: pay-core/pyproject.toml
+      - name: Install project and test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Configure Redis non-evicting policy
+        run: |
+          python - <<'PYREDIS'
+          import redis
+          r = redis.Redis.from_url('redis://127.0.0.1:6379/0')
+          assert r.ping()
+          r.config_set('maxmemory-policy', 'noeviction')
+          assert r.config_get('maxmemory-policy')['maxmemory-policy'] == 'noeviction'
+          PYREDIS
+      - name: Bootstrap isolated PostgreSQL roles
+        run: |
+          python - <<'PY'
+          import os
+          import psycopg
+          from psycopg import sql
+          with psycopg.connect('postgresql://postgres:ci_postgres_only@127.0.0.1:5432/blackwolf_pay_test', autocommit=True) as conn:
+              for role, env in [('pay_migrator','PAY_MIGRATOR_PASSWORD'),('pay_runtime','PAY_APP_PASSWORD')]:
+                  conn.execute(sql.SQL('CREATE ROLE {} LOGIN PASSWORD {}').format(sql.Identifier(role),sql.Literal(os.environ[env])))
+              conn.execute('GRANT CONNECT ON DATABASE blackwolf_pay_test TO pay_migrator, pay_runtime')
+              conn.execute('GRANT USAGE, CREATE ON SCHEMA public TO pay_migrator')
+              conn.execute('GRANT USAGE ON SCHEMA public TO pay_runtime')
+          PY
+      - name: Apply migrations as pay_migrator
+        run: DATABASE_URL="$MIGRATOR_DATABASE_URL" python scripts/migrate.py
+      - name: Verify role privileges and Redis connectivity
+        run: |
+          python - <<'PY'
+          import os
+          import psycopg
+          import redis
+          with psycopg.connect(os.environ['TEST_DATABASE_URL'].replace('postgresql+psycopg://','postgresql://')) as conn:
+              assert conn.execute('SELECT current_user').fetchone()[0] == 'pay_runtime'
+              for table in ('journals','journal_lines'):
+                  assert not conn.execute('SELECT has_table_privilege(current_user,%s,%s)',(table,'DELETE')).fetchone()[0]
+                  assert not conn.execute('SELECT has_table_privilege(current_user,%s,%s)',(table,'TRIGGER')).fetchone()[0]
+          r = redis.Redis.from_url(os.environ['REDIS_URL'])
+          assert r.ping()
+          assert r.config_get('maxmemory-policy')['maxmemory-policy'] == 'noeviction'
+          PY
+      - name: Unit, integration and concurrency tests
+        run: |
+          mkdir -p evidence
+          set -o pipefail
+          python -m pytest tests/unit tests/integration tests/concurrency -v -ra --strict-markers --junitxml=evidence/pytest.xml 2>&1 | tee evidence/pytest.log
+      - name: Record evidence hashes
+        if: always()
+        run: |
+          mkdir -p evidence
+          sha256sum pyproject.toml migrations/*.sql ../.github/workflows/pay-core-ci.yml > evidence/source-sha256.txt
+          if test -f evidence/pytest.log; then sha256sum evidence/pytest.log evidence/pytest.xml >> evidence/source-sha256.txt 2>/dev/null || true; fi
+          printf 'commit=%s\nrun_id=%s\nrun_attempt=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > evidence/run-context.txt
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pay-core-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: pay-core/evidence/
+          if-no-files-found: error
+          retention-days: 30
