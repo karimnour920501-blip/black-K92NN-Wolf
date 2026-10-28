@@ -3,6 +3,10 @@ name: UER P1 source build and SQLite contracts (NOT release approval)
 on:
   workflow_dispatch:
   push:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
     paths:
       - 'source/**'
       - 'tests/**'
