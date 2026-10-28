@@ -1,0 +1,65 @@
+name: OpenAI Developers Lab CI
+on:
+  push:
+    branches: [main, 'feature/openai-developers-lab-*']
+    paths:
+      - 'openai-developers-lab/**'
+      - '.github/workflows/openai-developers-lab-ci.yml'
+  pull_request:
+    paths:
+      - 'openai-developers-lab/**'
+      - '.github/workflows/openai-developers-lab-ci.yml'
+  workflow_dispatch:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: openai-developers-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: openai-developers-lab/requirements.txt
+      - name: Install real SDK and dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Verify installed OpenAI SDK
+        run: python -c "import openai; print('openai SDK:', openai.__version__)"
+      - name: Run offline unit tests using real SDK import
+        run: python -m pytest -q
+  live-smoke:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: openai-live-test
+    defaults:
+      run:
+        working-directory: openai-developers-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt
+      - name: Live OpenAI API smoke test
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-4.1-mini
+        run: |
+          python - <<'PY'
+          import asyncio, os
+          from openai import AsyncOpenAI
+          async def main():
+              key = os.getenv("OPENAI_API_KEY")
+              if not key:
+                  raise RuntimeError("Missing OPENAI_API_KEY GitHub environment secret")
+              response = await AsyncOpenAI(api_key=key, timeout=20, max_retries=0).responses.create(
+                  model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+                  input="Reply with OK only.",
+                  max_output_tokens=16,
+              )
+              assert response.output_text.strip(), "Empty API response"
+              print("Live API request succeeded; response content redacted.")
+          asyncio.run(main())
+          PY
