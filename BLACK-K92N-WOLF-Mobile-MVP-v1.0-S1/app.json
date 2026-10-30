@@ -1,0 +1,1 @@
+{"expo":{"name":"BLACK-K92N-WOLF","slug":"black-k92n-wolf-mobile","scheme":"blackk92nwolf","version":"1.0.0","orientation":"portrait","userInterfaceStyle":"dark","newArchEnabled":true,"plugins":["expo-router"],"ios":{"supportsTablet":true,"bundleIdentifier":"com.blackk92n.wolfmobile"},"android":{"package":"com.blackk92n.wolfmobile"},"experiments":{"typedRoutes":true}}}
