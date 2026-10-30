@@ -43,3 +43,16 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f db/000_roles_example.sql
       - name: RLS database integration test
         run: psql -v ON_ERROR_STOP=1 -f tests/rls_integration.sql
+
+      - name: Live API JWT RBAC and tenant isolation
+        env:
+          JWT_ISSUER: wolf-ci
+          JWT_AUDIENCE: wolf-ci-api
+          JWT_SIGNING_KEY: ci-test-only-key-please-never-use-in-production-123456789
+          DATABASE_URL: Host=localhost;Port=5432;Database=wolf_ci;Username=wolf_app;Password=ci-test-password
+        run: |
+          psql -v ON_ERROR_STOP=1 -c "ALTER ROLE wolf_app WITH LOGIN PASSWORD 'ci-test-password' NOSUPERUSER NOBYPASSRLS;"
+          dotnet run --project src/Wolf.Commands.Api/Wolf.Commands.Api.csproj --no-build --configuration Release --no-launch-profile --urls http://127.0.0.1:5187 > /tmp/wolf-api.log 2>&1 &
+          api_pid=$!
+          trap 'cat /tmp/wolf-api.log; kill "$api_pid" 2>/dev/null || true' EXIT
+          python3 tests/http_security_integration.py
