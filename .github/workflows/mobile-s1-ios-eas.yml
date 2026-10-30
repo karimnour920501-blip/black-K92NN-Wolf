@@ -1,0 +1,56 @@
+name: Mobile S1 iPhone EAS Preview (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_apple_signing_ready:
+        description: 'Type READY only after EAS project, Apple credentials, and iPhone UDID registration are configured'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: mobile-s1-eas-ios-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  ios-preview:
+    if: github.ref == 'refs/heads/development/mobile-mvp-s1-evidence' && inputs.confirm_apple_signing_ready == 'READY'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      CI: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json
+      - name: Check prerequisites without printing secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${EXPO_TOKEN:-}" ]; then
+            echo "::error::Missing repository secret EXPO_TOKEN"
+            exit 1
+          fi
+          node - <<'NODE'
+          const config=require('./app.json');
+          const id=config.expo?.extra?.eas?.projectId;
+          if(!id || !/^[0-9a-f-]{36}$/i.test(id)){
+            console.error('::error::EAS projectId missing: link this Expo app to EAS first, then set expo.extra.eas.projectId');
+            process.exit(1);
+          }
+          NODE
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Verify source before paid iOS build
+        run: |
+          npm test
+          npm run typecheck
+      - name: Install EAS CLI
+        run: npm install --global eas-cli
+      - name: Build iOS ad hoc preview on Expo cloud
+        run: eas build --platform ios --profile ios_preview --non-interactive --wait
