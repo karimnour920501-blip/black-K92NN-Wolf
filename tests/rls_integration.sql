@@ -1,3 +1,4 @@
+-- Run after migrations and grants as database admin; test statements execute as wolf_app.
 BEGIN;
 SET LOCAL ROLE wolf_app;
 DO $$ BEGIN
@@ -14,13 +15,17 @@ DO $$ BEGIN
   RAISE EXCEPTION 'RLS_FAIL: cross-tenant row visible';
  END IF;
 END $$;
-DO $$ BEGIN
+DO $$
+DECLARE rejected boolean := false;
+BEGIN
  BEGIN
   INSERT INTO workspace_projects(id,tenant_id,name) VALUES
   ('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','11111111-1111-4111-8111-111111111111','cross-tenant');
-  RAISE EXCEPTION 'RLS_FAIL: cross-tenant insert succeeded';
  EXCEPTION WHEN check_violation OR insufficient_privilege THEN
-  NULL;
+  rejected := true;
  END;
+ IF NOT rejected THEN
+  RAISE EXCEPTION 'RLS_FAIL: cross-tenant insert was accepted';
+ END IF;
 END $$;
 ROLLBACK;
