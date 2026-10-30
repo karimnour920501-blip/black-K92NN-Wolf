@@ -9,6 +9,16 @@ class SourceContractTests(unittest.TestCase):
         catalog = json.loads((ROOT / "src/Wolf.Commands.Api/commands.json").read_text())
         self.assertEqual(len(catalog["commands"]), 100)
         self.assertEqual(len({x["command"].lower() for x in catalog["commands"]}), 100)
+        required = {"id", "category", "command", "description", "inputs", "outputs", "example", "acceptance", "type"}
+        self.assertEqual(catalog["count"], 100)
+        self.assertEqual([x["id"] for x in catalog["commands"]], list(range(1, 101)))
+        for command in catalog["commands"]:
+            self.assertEqual(set(command), required)
+            for field in required - {"id"}:
+                self.assertIsInstance(command[field], str)
+                self.assertTrue(command[field].strip(), (command["id"], field))
+            self.assertTrue(command["example"].startswith(command["command"] + " "))
+
 
     def test_security_guards(self):
         source = (ROOT / "src/Wolf.Commands.Api/Program.cs").read_text()
