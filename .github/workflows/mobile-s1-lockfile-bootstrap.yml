@@ -1,0 +1,41 @@
+name: Mobile S1 Lockfile Bootstrap
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - development/mobile-mvp-s1-evidence
+    paths:
+      - 'BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package.json'
+      - '.github/workflows/mobile-s1-lockfile-bootstrap.yml'
+permissions:
+  contents: write
+jobs:
+  generate-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: https://registry.npmjs.org
+      - name: Generate real lockfile from npm registry
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Validate lockfile
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+        run: node -e "const p=require('./package-lock.json'); if(p.lockfileVersion<2 || !p.packages) process.exit(1)"
+      - name: Commit lockfile to evidence branch only
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "development/mobile-mvp-s1-evidence"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfile unchanged"
+          else
+            git commit -m "build(mobile): add registry-resolved S1 lockfile (#10)"
+            git push origin HEAD:refs/heads/development/mobile-mvp-s1-evidence
+          fi
