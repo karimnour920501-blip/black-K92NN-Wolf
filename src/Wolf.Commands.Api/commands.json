@@ -4,503 +4,1103 @@
   "commands": [
     {
       "id": 1,
+      "category": "التصميم والهوية",
       "command": "/design-brief",
-      "description": "Design brief draft"
+      "description": "صياغة موجز تصميم",
+      "inputs": "الهدف والجمهور والقيود",
+      "outputs": "موجز معتمد",
+      "example": "/design-brief الهدف: BLACK-K92N-WOLF؛ المدخلات: الهدف والجمهور والقيود",
+      "acceptance": "تغطية الجمهور والمقاس والهدف",
+      "type": "نصي"
     },
     {
       "id": 2,
+      "category": "التصميم والهوية",
       "command": "/brand-system",
-      "description": "Catalog only; not implemented"
+      "description": "تحديد نظام الهوية",
+      "inputs": "الاسم والقيم والمراجع",
+      "outputs": "ألوان وخطوط وقواعد",
+      "example": "/brand-system الهدف: BLACK-K92N-WOLF؛ المدخلات: الاسم والقيم والمراجع",
+      "acceptance": "اتساق الهوية وإمكانية التطبيق",
+      "type": "نصي"
     },
     {
       "id": 3,
+      "category": "التصميم والهوية",
       "command": "/logo-concept",
-      "description": "Catalog only; not implemented"
+      "description": "توليد اتجاهات شعار",
+      "inputs": "اسم العلامة ورموزها",
+      "outputs": "3 اتجاهات مبررة",
+      "example": "/logo-concept الهدف: BLACK-K92N-WOLF؛ المدخلات: اسم العلامة ورموزها",
+      "acceptance": "قابلية التمييز والأحجام الصغيرة",
+      "type": "نصي"
     },
     {
       "id": 4,
+      "category": "التصميم والهوية",
       "command": "/poster-art",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم ملصق",
+      "inputs": "النص والمقاس والأسلوب",
+      "outputs": "ملصق بصري",
+      "example": "/poster-art الهدف: BLACK-K92N-WOLF؛ المدخلات: النص والمقاس والأسلوب",
+      "acceptance": "وضوح النص ودقة النسبة",
+      "type": "تكامل/أداة عند الإتاحة"
     },
     {
       "id": 5,
+      "category": "التصميم والهوية",
       "command": "/social-kit",
-      "description": "Catalog only; not implemented"
+      "description": "إعداد حزمة سوشيال",
+      "inputs": "المنصات والرسالة",
+      "outputs": "مقاسات وقوالب",
+      "example": "/social-kit الهدف: BLACK-K92N-WOLF؛ المدخلات: المنصات والرسالة",
+      "acceptance": "مطابقة المقاسات والهوية",
+      "type": "نصي"
     },
     {
       "id": 6,
+      "category": "التصميم والهوية",
       "command": "/ui-wireframe",
-      "description": "Catalog only; not implemented"
+      "description": "تخطيط واجهة أولي",
+      "inputs": "قصص المستخدم",
+      "outputs": "هيكل شاشات",
+      "example": "/ui-wireframe الهدف: BLACK-K92N-WOLF؛ المدخلات: قصص المستخدم",
+      "acceptance": "تغطية مسارات الاستخدام",
+      "type": "نصي"
     },
     {
       "id": 7,
+      "category": "التصميم والهوية",
       "command": "/ui-design",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم واجهة",
+      "inputs": "الهيكل والهوية",
+      "outputs": "مواصفات UI",
+      "example": "/ui-design الهدف: BLACK-K92N-WOLF؛ المدخلات: الهيكل والهوية",
+      "acceptance": "تباين وتجاوب وحالات",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 8,
+      "category": "التصميم والهوية",
       "command": "/ux-audit",
-      "description": "Catalog only; not implemented"
+      "description": "تدقيق تجربة المستخدم",
+      "inputs": "الشاشات والمهام",
+      "outputs": "قائمة مشكلات مرتبة",
+      "example": "/ux-audit الهدف: BLACK-K92N-WOLF؛ المدخلات: الشاشات والمهام",
+      "acceptance": "أدلة وقابلية إعادة الفحص",
+      "type": "نصي"
     },
     {
       "id": 9,
+      "category": "التصميم والهوية",
       "command": "/design-tokens",
-      "description": "Catalog only; not implemented"
+      "description": "إنشاء رموز التصميم",
+      "inputs": "ألوان ومسافات وخطوط",
+      "outputs": "Tokens قابلة للاستهلاك",
+      "example": "/design-tokens الهدف: BLACK-K92N-WOLF؛ المدخلات: ألوان ومسافات وخطوط",
+      "acceptance": "تسمية موحدة وبدون تضارب",
+      "type": "نصي"
     },
     {
       "id": 10,
+      "category": "التصميم والهوية",
       "command": "/component-spec",
-      "description": "Catalog only; not implemented"
+      "description": "توصيف مكوّن UI",
+      "inputs": "السلوك والحالات",
+      "outputs": "مواصفة مكوّن",
+      "example": "/component-spec الهدف: BLACK-K92N-WOLF؛ المدخلات: السلوك والحالات",
+      "acceptance": "حالات الخطأ والوصول",
+      "type": "نصي"
     },
     {
       "id": 11,
+      "category": "التصميم والهوية",
       "command": "/responsive",
-      "description": "Catalog only; not implemented"
+      "description": "تحويل لتصميم متجاوب",
+      "inputs": "المقاسات والواجهة",
+      "outputs": "قواعد Breakpoints",
+      "example": "/responsive الهدف: BLACK-K92N-WOLF؛ المدخلات: المقاسات والواجهة",
+      "acceptance": "اختبار عرض الهاتف والحاسوب",
+      "type": "نصي"
     },
     {
       "id": 12,
+      "category": "التصميم والهوية",
       "command": "/accessibility",
-      "description": "Catalog only; not implemented"
+      "description": "تحسين الوصول",
+      "inputs": "الواجهة والمعايير",
+      "outputs": "قائمة إصلاحات WCAG",
+      "example": "/accessibility الهدف: BLACK-K92N-WOLF؛ المدخلات: الواجهة والمعايير",
+      "acceptance": "تباين ولوحة مفاتيح وتسميات",
+      "type": "نصي"
     },
     {
       "id": 13,
+      "category": "التصميم والهوية",
       "command": "/design-critique",
-      "description": "Catalog only; not implemented"
+      "description": "نقد تصميم",
+      "inputs": "صورة أو ملف ومعايير",
+      "outputs": "تقييم وتحسينات",
+      "example": "/design-critique الهدف: BLACK-K92N-WOLF؛ المدخلات: صورة أو ملف ومعايير",
+      "acceptance": "أسباب قابلة للملاحظة",
+      "type": "نصي"
     },
     {
       "id": 14,
+      "category": "التصميم والهوية",
       "command": "/image-edit",
-      "description": "Catalog only; not implemented"
+      "description": "تحرير صورة",
+      "inputs": "الصورة والتغييرات",
+      "outputs": "نسخة معدلة",
+      "example": "/image-edit الهدف: BLACK-K92N-WOLF؛ المدخلات: الصورة والتغييرات",
+      "acceptance": "مطابقة العناصر المطلوبة",
+      "type": "تكامل/أداة عند الإتاحة"
     },
     {
       "id": 15,
+      "category": "التصميم والهوية",
       "command": "/design-handoff",
-      "description": "Catalog only; not implemented"
+      "description": "تسليم التصميم للتطوير",
+      "inputs": "مكونات وأصول",
+      "outputs": "مواصفات وتسليم",
+      "example": "/design-handoff الهدف: BLACK-K92N-WOLF؛ المدخلات: مكونات وأصول",
+      "acceptance": "اكتمال الحالات والقياسات",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 16,
+      "category": "البرمجة والهندسة",
       "command": "/plan",
-      "description": "Catalog only; not implemented"
+      "description": "تخطيط التنفيذ",
+      "inputs": "هدف وقيود",
+      "outputs": "مراحل وقبول",
+      "example": "/plan الهدف: BLACK-K92N-WOLF؛ المدخلات: هدف وقيود",
+      "acceptance": "تبعيات واضحة",
+      "type": "نصي"
     },
     {
       "id": 17,
+      "category": "البرمجة والهندسة",
       "command": "/role",
-      "description": "Catalog only; not implemented"
+      "description": "تحديد دور مهني",
+      "inputs": "التخصص والمهمة",
+      "outputs": "منهج استجابة",
+      "example": "/role الهدف: BLACK-K92N-WOLF؛ المدخلات: التخصص والمهمة",
+      "acceptance": "الالتزام بنطاق الدور",
+      "type": "نصي"
     },
     {
       "id": 18,
+      "category": "البرمجة والهندسة",
       "command": "/architect",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم معمارية",
+      "inputs": "المتطلبات والأحمال",
+      "outputs": "مكونات وقرارات ADR",
+      "example": "/architect الهدف: BLACK-K92N-WOLF؛ المدخلات: المتطلبات والأحمال",
+      "acceptance": "تفسير المفاضلات",
+      "type": "نصي"
     },
     {
       "id": 19,
+      "category": "البرمجة والهندسة",
       "command": "/reverse",
-      "description": "Catalog only; not implemented"
+      "description": "هندسة عكسية",
+      "inputs": "مستودع أو نظام",
+      "outputs": "خريطة بنية",
+      "example": "/reverse الهدف: BLACK-K92N-WOLF؛ المدخلات: مستودع أو نظام",
+      "acceptance": "إسناد كل استنتاج لدليل",
+      "type": "نصي"
     },
     {
       "id": 20,
+      "category": "البرمجة والهندسة",
       "command": "/build",
-      "description": "Catalog only; not implemented"
+      "description": "إنشاء مشروع برمجي",
+      "inputs": "المواصفات والبيئة",
+      "outputs": "ملفات مشروع",
+      "example": "/build الهدف: BLACK-K92N-WOLF؛ المدخلات: المواصفات والبيئة",
+      "acceptance": "بناء وتشغيل إن أمكن",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 21,
+      "category": "البرمجة والهندسة",
       "command": "/api-design",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم API",
+      "inputs": "الكيانات والعمليات",
+      "outputs": "OpenAPI وعقود",
+      "example": "/api-design الهدف: BLACK-K92N-WOLF؛ المدخلات: الكيانات والعمليات",
+      "acceptance": "صلاحية Schema",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 22,
+      "category": "البرمجة والهندسة",
       "command": "/domain-model",
-      "description": "Catalog only; not implemented"
+      "description": "نمذجة المجال",
+      "inputs": "قواعد العمل",
+      "outputs": "كيانات وحدود",
+      "example": "/domain-model الهدف: BLACK-K92N-WOLF؛ المدخلات: قواعد العمل",
+      "acceptance": "سلامة الثوابت",
+      "type": "نصي"
     },
     {
       "id": 23,
+      "category": "البرمجة والهندسة",
       "command": "/database-schema",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم قاعدة البيانات",
+      "inputs": "كيانات واستعلامات",
+      "outputs": "DDL وفهارس",
+      "example": "/database-schema الهدف: BLACK-K92N-WOLF؛ المدخلات: كيانات واستعلامات",
+      "acceptance": "قيود وترحيل تجريبي",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 24,
+      "category": "البرمجة والهندسة",
       "command": "/refactor",
-      "description": "Catalog only; not implemented"
+      "description": "إعادة هيكلة",
+      "inputs": "الكود والهدف",
+      "outputs": "Patch محسن",
+      "example": "/refactor الهدف: BLACK-K92N-WOLF؛ المدخلات: الكود والهدف",
+      "acceptance": "الاختبارات لا تتراجع",
+      "type": "نصي"
     },
     {
       "id": 25,
+      "category": "البرمجة والهندسة",
       "command": "/debug",
-      "description": "Catalog only; not implemented"
+      "description": "تشخيص خطأ",
+      "inputs": "رسالة وخطوات إعادة",
+      "outputs": "سبب وإصلاح",
+      "example": "/debug الهدف: BLACK-K92N-WOLF؛ المدخلات: رسالة وخطوات إعادة",
+      "acceptance": "إعادة إنتاج ثم زوال",
+      "type": "نصي"
     },
     {
       "id": 26,
+      "category": "البرمجة والهندسة",
       "command": "/code-review",
-      "description": "Catalog only; not implemented"
+      "description": "مراجعة كود",
+      "inputs": "Diff ومتطلبات",
+      "outputs": "ملاحظات بأولوية",
+      "example": "/code-review الهدف: BLACK-K92N-WOLF؛ المدخلات: Diff ومتطلبات",
+      "acceptance": "تحديد ملفات وأسطر",
+      "type": "نصي"
     },
     {
       "id": 27,
+      "category": "البرمجة والهندسة",
       "command": "/performance",
-      "description": "Catalog only; not implemented"
+      "description": "تحسين أداء",
+      "inputs": "قياسات وبيئة",
+      "outputs": "خطة وتحسين",
+      "example": "/performance الهدف: BLACK-K92N-WOLF؛ المدخلات: قياسات وبيئة",
+      "acceptance": "مقارنة قبل وبعد",
+      "type": "نصي"
     },
     {
       "id": 28,
+      "category": "البرمجة والهندسة",
       "command": "/event-sourcing",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم سجل أحداث",
+      "inputs": "أحداث وقواعد",
+      "outputs": "عقود وتوقعات",
+      "example": "/event-sourcing الهدف: BLACK-K92N-WOLF؛ المدخلات: أحداث وقواعد",
+      "acceptance": "إعادة بناء الحالة",
+      "type": "نصي"
     },
     {
       "id": 29,
+      "category": "البرمجة والهندسة",
       "command": "/replay",
-      "description": "Catalog only; not implemented"
+      "description": "إعادة تشغيل حتمية",
+      "inputs": "الأحداث والإصدارات",
+      "outputs": "نتائج Replay",
+      "example": "/replay الهدف: BLACK-K92N-WOLF؛ المدخلات: الأحداث والإصدارات",
+      "acceptance": "تطابق Hash ومخرجات",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 30,
+      "category": "البرمجة والهندسة",
       "command": "/distributed-systems",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم نظام موزع",
+      "inputs": "SLO وتدفق البيانات",
+      "outputs": "حدود خدمات",
+      "example": "/distributed-systems الهدف: BLACK-K92N-WOLF؛ المدخلات: SLO وتدفق البيانات",
+      "acceptance": "فشل وتكرار واتساق",
+      "type": "نصي"
     },
     {
       "id": 31,
+      "category": "البرمجة والهندسة",
       "command": "/integration",
-      "description": "Catalog only; not implemented"
+      "description": "دمج خدمات",
+      "inputs": "العقود والمفاتيح",
+      "outputs": "Adapters",
+      "example": "/integration الهدف: BLACK-K92N-WOLF؛ المدخلات: العقود والمفاتيح",
+      "acceptance": "اختبار تكامل",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 32,
+      "category": "البرمجة والهندسة",
       "command": "/migration",
-      "description": "Catalog only; not implemented"
+      "description": "ترحيل بيانات",
+      "inputs": "المصدر والهدف",
+      "outputs": "خطة ترحيل",
+      "example": "/migration الهدف: BLACK-K92N-WOLF؛ المدخلات: المصدر والهدف",
+      "acceptance": "عدّ ومقارنة وتراجع",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 33,
+      "category": "البرمجة والهندسة",
       "command": "/technical-debt",
-      "description": "Catalog only; not implemented"
+      "description": "تقييم دين تقني",
+      "inputs": "المستودع والمشكلات",
+      "outputs": "Backlog مرتب",
+      "example": "/technical-debt الهدف: BLACK-K92N-WOLF؛ المدخلات: المستودع والمشكلات",
+      "acceptance": "تقدير أثر ومخاطر",
+      "type": "نصي"
     },
     {
       "id": 34,
+      "category": "البرمجة والهندسة",
       "command": "/documentation",
-      "description": "Catalog only; not implemented"
+      "description": "توثيق هندسي",
+      "inputs": "الكود والقرارات",
+      "outputs": "README وADR",
+      "example": "/documentation الهدف: BLACK-K92N-WOLF؛ المدخلات: الكود والقرارات",
+      "acceptance": "أوامر صحيحة وروابط",
+      "type": "نصي"
     },
     {
       "id": 35,
+      "category": "البرمجة والهندسة",
       "command": "/eli5",
-      "description": "Catalog only; not implemented"
+      "description": "تبسيط مفهوم",
+      "inputs": "المفهوم والجمهور",
+      "outputs": "شرح وأمثلة",
+      "example": "/eli5 الهدف: BLACK-K92N-WOLF؛ المدخلات: المفهوم والجمهور",
+      "acceptance": "دقة دون تضليل",
+      "type": "نصي"
     },
     {
       "id": 36,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/app-spec",
-      "description": "Catalog only; not implemented"
+      "description": "صياغة مواصفات تطبيق",
+      "inputs": "الفكرة والمستخدم",
+      "outputs": "PRD",
+      "example": "/app-spec الهدف: BLACK-K92N-WOLF؛ المدخلات: الفكرة والمستخدم",
+      "acceptance": "قصص قبول",
+      "type": "نصي"
     },
     {
       "id": 37,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/mvp",
-      "description": "Catalog only; not implemented"
+      "description": "تحديد MVP",
+      "inputs": "الفرضيات والموارد",
+      "outputs": "نطاق أول إصدار",
+      "example": "/mvp الهدف: BLACK-K92N-WOLF؛ المدخلات: الفرضيات والموارد",
+      "acceptance": "إمكانية اختبار الفرضية",
+      "type": "نصي"
     },
     {
       "id": 38,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/user-stories",
-      "description": "Catalog only; not implemented"
+      "description": "كتابة قصص مستخدم",
+      "inputs": "الأدوار والأهداف",
+      "outputs": "Stories",
+      "example": "/user-stories الهدف: BLACK-K92N-WOLF؛ المدخلات: الأدوار والأهداف",
+      "acceptance": "قبول قابل للاختبار",
+      "type": "نصي"
     },
     {
       "id": 39,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/user-flow",
-      "description": "Catalog only; not implemented"
+      "description": "رسم رحلة مستخدم",
+      "inputs": "نقطة البدء والهدف",
+      "outputs": "تدفق شاشات",
+      "example": "/user-flow الهدف: BLACK-K92N-WOLF؛ المدخلات: نقطة البدء والهدف",
+      "acceptance": "مسارات نجاح وفشل",
+      "type": "نصي"
     },
     {
       "id": 40,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/frontend",
-      "description": "Catalog only; not implemented"
+      "description": "بناء واجهة أمامية",
+      "inputs": "الشاشات والـAPI",
+      "outputs": "كود واجهة",
+      "example": "/frontend الهدف: BLACK-K92N-WOLF؛ المدخلات: الشاشات والـAPI",
+      "acceptance": "Build وتجاوب",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 41,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/backend",
-      "description": "Catalog only; not implemented"
+      "description": "بناء خدمة خلفية",
+      "inputs": "العقود والبيانات",
+      "outputs": "كود API",
+      "example": "/backend الهدف: BLACK-K92N-WOLF؛ المدخلات: العقود والبيانات",
+      "acceptance": "اختبارات ومسارات",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 42,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/mobile-app",
-      "description": "Catalog only; not implemented"
+      "description": "تخطيط تطبيق جوال",
+      "inputs": "المنصات والوظائف",
+      "outputs": "هيكل وتنفيذ أولي",
+      "example": "/mobile-app الهدف: BLACK-K92N-WOLF؛ المدخلات: المنصات والوظائف",
+      "acceptance": "سلوك iOS/Android",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 43,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/auth",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم تسجيل الدخول",
+      "inputs": "الأدوار والتهديدات",
+      "outputs": "تدفق Auth",
+      "example": "/auth الهدف: BLACK-K92N-WOLF؛ المدخلات: الأدوار والتهديدات",
+      "acceptance": "اختبارات صلاحيات",
+      "type": "نصي"
     },
     {
       "id": 44,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/multi-tenant",
-      "description": "Catalog only; not implemented"
+      "description": "عزل المستأجرين",
+      "inputs": "نموذج المستأجر",
+      "outputs": "RLS وحدود",
+      "example": "/multi-tenant الهدف: BLACK-K92N-WOLF؛ المدخلات: نموذج المستأجر",
+      "acceptance": "اختبارات منع التسرب",
+      "type": "نصي"
     },
     {
       "id": 45,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/payments",
-      "description": "Catalog only; not implemented"
+      "description": "تكامل المدفوعات",
+      "inputs": "المزود والخطط",
+      "outputs": "عقود Webhook",
+      "example": "/payments الهدف: BLACK-K92N-WOLF؛ المدخلات: المزود والخطط",
+      "acceptance": "Idempotency وحالات فشل",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 46,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/notifications",
-      "description": "Catalog only; not implemented"
+      "description": "إشعارات",
+      "inputs": "القنوات والأحداث",
+      "outputs": "قوالب وطوابير",
+      "example": "/notifications الهدف: BLACK-K92N-WOLF؛ المدخلات: القنوات والأحداث",
+      "acceptance": "منع التكرار والانسحاب",
+      "type": "نصي"
     },
     {
       "id": 47,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/realtime",
-      "description": "Catalog only; not implemented"
+      "description": "وظائف فورية",
+      "inputs": "الأحداث والعملاء",
+      "outputs": "WS/SSE تصميم",
+      "example": "/realtime الهدف: BLACK-K92N-WOLF؛ المدخلات: الأحداث والعملاء",
+      "acceptance": "انقطاع وإعادة اتصال",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 48,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/offline-first",
-      "description": "Catalog only; not implemented"
+      "description": "دعم دون اتصال",
+      "inputs": "البيانات والصراعات",
+      "outputs": "خطة مزامنة",
+      "example": "/offline-first الهدف: BLACK-K92N-WOLF؛ المدخلات: البيانات والصراعات",
+      "acceptance": "اختبار انقطاع وتعارض",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 49,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/app-analytics",
-      "description": "Catalog only; not implemented"
+      "description": "قياس التطبيق",
+      "inputs": "أحداث ومؤشرات",
+      "outputs": "Tracking plan",
+      "example": "/app-analytics الهدف: BLACK-K92N-WOLF؛ المدخلات: أحداث ومؤشرات",
+      "acceptance": "تعريف الأحداث والتحقق",
+      "type": "نصي"
     },
     {
       "id": 50,
+      "category": "تطبيقات الويب والهاتف",
       "command": "/release-readiness",
-      "description": "Catalog only; not implemented"
+      "description": "تقييم جاهزية إصدار",
+      "inputs": "البناء والاختبارات",
+      "outputs": "Go/No-Go",
+      "example": "/release-readiness الهدف: BLACK-K92N-WOLF؛ المدخلات: البناء والاختبارات",
+      "acceptance": "عدم اعتماد غير المختبر",
+      "type": "فحص مشروط بالأدلة"
     },
     {
       "id": 51,
+      "category": "الوكلاء وMCP",
       "command": "/agent",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم وكيل AI",
+      "inputs": "الهدف والأدوات",
+      "outputs": "مواصفة وكيل",
+      "example": "/agent الهدف: BLACK-K92N-WOLF؛ المدخلات: الهدف والأدوات",
+      "acceptance": "حدود ونجاح",
+      "type": "نصي"
     },
     {
       "id": 52,
+      "category": "الوكلاء وMCP",
       "command": "/agent-workflow",
-      "description": "Catalog only; not implemented"
+      "description": "تسلسل وكلاء",
+      "inputs": "الأدوار والأحداث",
+      "outputs": "DAG مهام",
+      "example": "/agent-workflow الهدف: BLACK-K92N-WOLF؛ المدخلات: الأدوار والأحداث",
+      "acceptance": "كشف دورات وفشل",
+      "type": "نصي"
     },
     {
       "id": 53,
+      "category": "الوكلاء وMCP",
       "command": "/mcp-audit",
-      "description": "Catalog only; not implemented"
+      "description": "فحص MCP",
+      "inputs": "خوادم وأدوات",
+      "outputs": "مصفوفة صلاحيات",
+      "example": "/mcp-audit الهدف: BLACK-K92N-WOLF؛ المدخلات: خوادم وأدوات",
+      "acceptance": "تحقق من أدوات فعلية",
+      "type": "فحص مشروط بالأدلة"
     },
     {
       "id": 54,
+      "category": "الوكلاء وMCP",
       "command": "/mcp-server",
-      "description": "Catalog only; not implemented"
+      "description": "بناء خادم MCP",
+      "inputs": "الأدوات والعقود",
+      "outputs": "خادم قابل للتشغيل",
+      "example": "/mcp-server الهدف: BLACK-K92N-WOLF؛ المدخلات: الأدوات والعقود",
+      "acceptance": "اختبارات بروتوكول",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 55,
+      "category": "الوكلاء وMCP",
       "command": "/tool-policy",
-      "description": "Catalog only; not implemented"
+      "description": "سياسة استدعاء أدوات",
+      "inputs": "العمليات والمخاطر",
+      "outputs": "قواعد Allow/Deny",
+      "example": "/tool-policy الهدف: BLACK-K92N-WOLF؛ المدخلات: العمليات والمخاطر",
+      "acceptance": "اختبارات منع",
+      "type": "نصي"
     },
     {
       "id": 56,
+      "category": "الوكلاء وMCP",
       "command": "/rag",
-      "description": "Catalog only; not implemented"
+      "description": "بناء RAG",
+      "inputs": "المصادر والأسئلة",
+      "outputs": "Pipeline استرجاع",
+      "example": "/rag الهدف: BLACK-K92N-WOLF؛ المدخلات: المصادر والأسئلة",
+      "acceptance": "Recall ودقة اقتباس",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 57,
+      "category": "الوكلاء وMCP",
       "command": "/prompt-engineering",
-      "description": "Catalog only; not implemented"
+      "description": "تحسين توجيه",
+      "inputs": "المهمة والأمثلة",
+      "outputs": "Prompt مُنسّخ",
+      "example": "/prompt-engineering الهدف: BLACK-K92N-WOLF؛ المدخلات: المهمة والأمثلة",
+      "acceptance": "تقييم حالات",
+      "type": "نصي"
     },
     {
       "id": 58,
+      "category": "الوكلاء وMCP",
       "command": "/agent-eval",
-      "description": "Catalog only; not implemented"
+      "description": "تقييم وكيل",
+      "inputs": "حالات اختبار",
+      "outputs": "تقرير نجاح",
+      "example": "/agent-eval الهدف: BLACK-K92N-WOLF؛ المدخلات: حالات اختبار",
+      "acceptance": "نتائج قابلة للإعادة",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 59,
+      "category": "الوكلاء وMCP",
       "command": "/human-in-loop",
-      "description": "Catalog only; not implemented"
+      "description": "مراجعة بشرية",
+      "inputs": "أفعال عالية الخطورة",
+      "outputs": "نقاط موافقة",
+      "example": "/human-in-loop الهدف: BLACK-K92N-WOLF؛ المدخلات: أفعال عالية الخطورة",
+      "acceptance": "لا تنفيذ دون تصريح",
+      "type": "نصي"
     },
     {
       "id": 60,
+      "category": "الوكلاء وMCP",
       "command": "/model-routing",
-      "description": "Catalog only; not implemented"
+      "description": "توجيه نماذج",
+      "inputs": "تكلفة وزمن وجودة",
+      "outputs": "سياسة اختيار",
+      "example": "/model-routing الهدف: BLACK-K92N-WOLF؛ المدخلات: تكلفة وزمن وجودة",
+      "acceptance": "مقارنة جودة وتكلفة",
+      "type": "نصي"
     },
     {
       "id": 61,
+      "category": "الأمن السيبراني",
       "command": "/security",
-      "description": "Catalog only; not implemented"
+      "description": "مراجعة أمنية",
+      "inputs": "النطاق والأصول",
+      "outputs": "مخاطر وإصلاحات",
+      "example": "/security الهدف: BLACK-K92N-WOLF؛ المدخلات: النطاق والأصول",
+      "acceptance": "أدلة لكل ثغرة",
+      "type": "نصي"
     },
     {
       "id": 62,
+      "category": "الأمن السيبراني",
       "command": "/threat-model",
-      "description": "Catalog only; not implemented"
+      "description": "نمذجة تهديد",
+      "inputs": "مخطط وتدفقات",
+      "outputs": "STRIDE أو مشابه",
+      "example": "/threat-model الهدف: BLACK-K92N-WOLF؛ المدخلات: مخطط وتدفقات",
+      "acceptance": "تغطية حدود الثقة",
+      "type": "نصي"
     },
     {
       "id": 63,
+      "category": "الأمن السيبراني",
       "command": "/authz-audit",
-      "description": "Catalog only; not implemented"
+      "description": "تدقيق التفويض",
+      "inputs": "الأدوار والمسارات",
+      "outputs": "مصفوفة وصول",
+      "example": "/authz-audit الهدف: BLACK-K92N-WOLF؛ المدخلات: الأدوار والمسارات",
+      "acceptance": "اختبارات منع تصعيد",
+      "type": "نصي"
     },
     {
       "id": 64,
+      "category": "الأمن السيبراني",
       "command": "/secrets-audit",
-      "description": "Catalog only; not implemented"
+      "description": "فحص الأسرار",
+      "inputs": "الإعدادات والمستودع",
+      "outputs": "خطة إزالة وتدوير",
+      "example": "/secrets-audit الهدف: BLACK-K92N-WOLF؛ المدخلات: الإعدادات والمستودع",
+      "acceptance": "عدم عرض أسرار",
+      "type": "فحص مشروط بالأدلة"
     },
     {
       "id": 65,
+      "category": "الأمن السيبراني",
       "command": "/dependency-audit",
-      "description": "Catalog only; not implemented"
+      "description": "تدقيق الحزم",
+      "inputs": "Lockfiles",
+      "outputs": "ثغرات وأولويات",
+      "example": "/dependency-audit الهدف: BLACK-K92N-WOLF؛ المدخلات: Lockfiles",
+      "acceptance": "مطابقة إصدارات",
+      "type": "فحص مشروط بالأدلة"
     },
     {
       "id": 66,
+      "category": "الأمن السيبراني",
       "command": "/api-security",
-      "description": "Catalog only; not implemented"
+      "description": "حماية API",
+      "inputs": "العقود والهوية",
+      "outputs": "ضوابط حماية",
+      "example": "/api-security الهدف: BLACK-K92N-WOLF؛ المدخلات: العقود والهوية",
+      "acceptance": "اختبارات سلبية",
+      "type": "نصي"
     },
     {
       "id": 67,
+      "category": "الأمن السيبراني",
       "command": "/privacy-design",
-      "description": "Catalog only; not implemented"
+      "description": "الخصوصية بالتصميم",
+      "inputs": "تدفق بيانات",
+      "outputs": "سياسات احتفاظ",
+      "example": "/privacy-design الهدف: BLACK-K92N-WOLF؛ المدخلات: تدفق بيانات",
+      "acceptance": "تقليل البيانات",
+      "type": "نصي"
     },
     {
       "id": 68,
+      "category": "الأمن السيبراني",
       "command": "/secure-code",
-      "description": "Catalog only; not implemented"
+      "description": "مراجعة كود آمن",
+      "inputs": "الكود والتهديدات",
+      "outputs": "Patch آمن",
+      "example": "/secure-code الهدف: BLACK-K92N-WOLF؛ المدخلات: الكود والتهديدات",
+      "acceptance": "اختبارات استغلال آمنة",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 69,
+      "category": "الأمن السيبراني",
       "command": "/incident-response",
-      "description": "Catalog only; not implemented"
+      "description": "خطة استجابة حادث",
+      "inputs": "السيناريو والخدمات",
+      "outputs": "Runbook",
+      "example": "/incident-response الهدف: BLACK-K92N-WOLF؛ المدخلات: السيناريو والخدمات",
+      "acceptance": "تمرين طاولة",
+      "type": "نصي"
     },
     {
       "id": 70,
+      "category": "الأمن السيبراني",
       "command": "/security-evidence",
-      "description": "Catalog only; not implemented"
+      "description": "ملف إثبات أمني",
+      "inputs": "السجلات والتقارير",
+      "outputs": "Evidence matrix",
+      "example": "/security-evidence الهدف: BLACK-K92N-WOLF؛ المدخلات: السجلات والتقارير",
+      "acceptance": "توقيت ومصدر لكل دليل",
+      "type": "فحص مشروط بالأدلة"
     },
     {
       "id": 71,
+      "category": "DevOps والسحابة",
       "command": "/dockerize",
-      "description": "Catalog only; not implemented"
+      "description": "تغليف حاويات",
+      "inputs": "الخدمات والتبعيات",
+      "outputs": "Dockerfile/Compose",
+      "example": "/dockerize الهدف: BLACK-K92N-WOLF؛ المدخلات: الخدمات والتبعيات",
+      "acceptance": "Build وHealthcheck",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 72,
+      "category": "DevOps والسحابة",
       "command": "/ci-cd",
-      "description": "Catalog only; not implemented"
+      "description": "إنشاء CI/CD",
+      "inputs": "المستودع والبيئة",
+      "outputs": "Pipeline",
+      "example": "/ci-cd الهدف: BLACK-K92N-WOLF؛ المدخلات: المستودع والبيئة",
+      "acceptance": "تشغيل موثق",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 73,
+      "category": "DevOps والسحابة",
       "command": "/deploy",
-      "description": "Catalog only; not implemented"
+      "description": "خطة نشر",
+      "inputs": "البيئة والإصدار",
+      "outputs": "Manifest/Runbook",
+      "example": "/deploy الهدف: BLACK-K92N-WOLF؛ المدخلات: البيئة والإصدار",
+      "acceptance": "تحقق نشر فعلي",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 74,
+      "category": "DevOps والسحابة",
       "command": "/kubernetes",
-      "description": "Catalog only; not implemented"
+      "description": "تهيئة Kubernetes",
+      "inputs": "الأحمال والموارد",
+      "outputs": "Manifests/Helm",
+      "example": "/kubernetes الهدف: BLACK-K92N-WOLF؛ المدخلات: الأحمال والموارد",
+      "acceptance": "فحص Schema وRollout",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 75,
+      "category": "DevOps والسحابة",
       "command": "/terraform",
-      "description": "Catalog only; not implemented"
+      "description": "بنية ككود",
+      "inputs": "المزود والموارد",
+      "outputs": "Terraform",
+      "example": "/terraform الهدف: BLACK-K92N-WOLF؛ المدخلات: المزود والموارد",
+      "acceptance": "Validate/Plan",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 76,
+      "category": "DevOps والسحابة",
       "command": "/observability",
-      "description": "Catalog only; not implemented"
+      "description": "مراقبة وتشخيص",
+      "inputs": "SLO والخدمات",
+      "outputs": "Metrics/Traces",
+      "example": "/observability الهدف: BLACK-K92N-WOLF؛ المدخلات: SLO والخدمات",
+      "acceptance": "إشارات قابلة للقياس",
+      "type": "نصي"
     },
     {
       "id": 77,
+      "category": "DevOps والسحابة",
       "command": "/backup-restore",
-      "description": "Catalog only; not implemented"
+      "description": "نسخ واستعادة",
+      "inputs": "RPO/RTO والبيانات",
+      "outputs": "خطة نسخ",
+      "example": "/backup-restore الهدف: BLACK-K92N-WOLF؛ المدخلات: RPO/RTO والبيانات",
+      "acceptance": "اختبار استعادة",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 78,
+      "category": "DevOps والسحابة",
       "command": "/ha-design",
-      "description": "Catalog only; not implemented"
+      "description": "توافر عالٍ",
+      "inputs": "SLO والمناطق",
+      "outputs": "Topology HA",
+      "example": "/ha-design الهدف: BLACK-K92N-WOLF؛ المدخلات: SLO والمناطق",
+      "acceptance": "اختبار فشل",
+      "type": "نصي"
     },
     {
       "id": 79,
+      "category": "DevOps والسحابة",
       "command": "/cost-optimize",
-      "description": "Catalog only; not implemented"
+      "description": "خفض تكاليف",
+      "inputs": "فواتير واستهلاك",
+      "outputs": "توصيات مالية",
+      "example": "/cost-optimize الهدف: BLACK-K92N-WOLF؛ المدخلات: فواتير واستهلاك",
+      "acceptance": "قياس وفر فعلي",
+      "type": "نصي"
     },
     {
       "id": 80,
+      "category": "DevOps والسحابة",
       "command": "/rollback",
-      "description": "Catalog only; not implemented"
+      "description": "تصميم التراجع",
+      "inputs": "الإصدار والمخاطر",
+      "outputs": "خطة Rollback",
+      "example": "/rollback الهدف: BLACK-K92N-WOLF؛ المدخلات: الإصدار والمخاطر",
+      "acceptance": "تمرين تراجع",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 81,
+      "category": "الأعمال وSaaS",
       "command": "/swot",
-      "description": "Catalog only; not implemented"
+      "description": "تحليل SWOT",
+      "inputs": "المنتج والسوق",
+      "outputs": "مصفوفة SWOT",
+      "example": "/swot الهدف: BLACK-K92N-WOLF؛ المدخلات: المنتج والسوق",
+      "acceptance": "فصل الأدلة عن الافتراض",
+      "type": "نصي"
     },
     {
       "id": 82,
+      "category": "الأعمال وSaaS",
       "command": "/tows",
-      "description": "Catalog only; not implemented"
+      "description": "تحويل SWOT لاستراتيجية",
+      "inputs": "مصفوفة SWOT",
+      "outputs": "مبادرات TOWS",
+      "example": "/tows الهدف: BLACK-K92N-WOLF؛ المدخلات: مصفوفة SWOT",
+      "acceptance": "مالك ومؤشر لكل مبادرة",
+      "type": "نصي"
     },
     {
       "id": 83,
+      "category": "الأعمال وSaaS",
       "command": "/market-research",
-      "description": "Catalog only; not implemented"
+      "description": "بحث سوق",
+      "inputs": "الجمهور والمنافسون",
+      "outputs": "ملف فرص",
+      "example": "/market-research الهدف: BLACK-K92N-WOLF؛ المدخلات: الجمهور والمنافسون",
+      "acceptance": "مصادر حديثة",
+      "type": "نصي"
     },
     {
       "id": 84,
+      "category": "الأعمال وSaaS",
       "command": "/pricing",
-      "description": "Catalog only; not implemented"
+      "description": "تسعير SaaS",
+      "inputs": "التكلفة والقيمة",
+      "outputs": "خطط أسعار",
+      "example": "/pricing الهدف: BLACK-K92N-WOLF؛ المدخلات: التكلفة والقيمة",
+      "acceptance": "حساب هامش وحساسية",
+      "type": "نصي"
     },
     {
       "id": 85,
+      "category": "الأعمال وSaaS",
       "command": "/business-model",
-      "description": "Catalog only; not implemented"
+      "description": "نموذج عمل",
+      "inputs": "العميل والقيمة",
+      "outputs": "Business Model Canvas",
+      "example": "/business-model الهدف: BLACK-K92N-WOLF؛ المدخلات: العميل والقيمة",
+      "acceptance": "فرضيات قابلة للاختبار",
+      "type": "نصي"
     },
     {
       "id": 86,
+      "category": "المحتوى والتسويق",
       "command": "/content-strategy",
-      "description": "Catalog only; not implemented"
+      "description": "استراتيجية محتوى",
+      "inputs": "الجمهور والهدف",
+      "outputs": "محاور وخطة",
+      "example": "/content-strategy الهدف: BLACK-K92N-WOLF؛ المدخلات: الجمهور والهدف",
+      "acceptance": "KPIs واضحة",
+      "type": "نصي"
     },
     {
       "id": 87,
+      "category": "المحتوى والتسويق",
       "command": "/copywriting",
-      "description": "Catalog only; not implemented"
+      "description": "صياغة تسويقية",
+      "inputs": "المنتج والقناة",
+      "outputs": "نسخ إعلانية",
+      "example": "/copywriting الهدف: BLACK-K92N-WOLF؛ المدخلات: المنتج والقناة",
+      "acceptance": "وضوح CTA",
+      "type": "نصي"
     },
     {
       "id": 88,
+      "category": "المحتوى والتسويق",
       "command": "/seo-brief",
-      "description": "Catalog only; not implemented"
+      "description": "موجز SEO",
+      "inputs": "الكلمات والنية",
+      "outputs": "هيكل مقال",
+      "example": "/seo-brief الهدف: BLACK-K92N-WOLF؛ المدخلات: الكلمات والنية",
+      "acceptance": "تطابق نية البحث",
+      "type": "نصي"
     },
     {
       "id": 89,
+      "category": "المحتوى والتسويق",
       "command": "/campaign",
-      "description": "Catalog only; not implemented"
+      "description": "حملة تسويق",
+      "inputs": "الميزانية والقنوات",
+      "outputs": "خطة حملة",
+      "example": "/campaign الهدف: BLACK-K92N-WOLF؛ المدخلات: الميزانية والقنوات",
+      "acceptance": "UTM وقياس تحويل",
+      "type": "نصي"
     },
     {
       "id": 90,
+      "category": "المحتوى والتسويق",
       "command": "/content-repurpose",
-      "description": "Catalog only; not implemented"
+      "description": "إعادة توظيف محتوى",
+      "inputs": "المادة والمنصات",
+      "outputs": "نسخ متعددة",
+      "example": "/content-repurpose الهدف: BLACK-K92N-WOLF؛ المدخلات: المادة والمنصات",
+      "acceptance": "حفظ الحقائق والحقوق",
+      "type": "نصي"
     },
     {
       "id": 91,
+      "category": "الاختبارات والتدقيق",
       "command": "/test",
-      "description": "Catalog only; not implemented"
+      "description": "خطة اختبارات",
+      "inputs": "المتطلبات والكود",
+      "outputs": "اختبارات وتقارير",
+      "example": "/test الهدف: BLACK-K92N-WOLF؛ المدخلات: المتطلبات والكود",
+      "acceptance": "نتائج تشغيل",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 92,
+      "category": "الاختبارات والتدقيق",
       "command": "/integration-test",
-      "description": "Catalog only; not implemented"
+      "description": "اختبارات تكامل",
+      "inputs": "الخدمات والعقود",
+      "outputs": "حالات تكامل",
+      "example": "/integration-test الهدف: BLACK-K92N-WOLF؛ المدخلات: الخدمات والعقود",
+      "acceptance": "نتائج مثبتة",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 93,
+      "category": "الاختبارات والتدقيق",
       "command": "/load-test",
-      "description": "Catalog only; not implemented"
+      "description": "اختبار تحميل",
+      "inputs": "SLO والسيناريو",
+      "outputs": "تقرير أداء",
+      "example": "/load-test الهدف: BLACK-K92N-WOLF؛ المدخلات: SLO والسيناريو",
+      "acceptance": "p95 ومعدل أخطاء",
+      "type": "تنفيذ مشروط بالأدوات"
     },
     {
       "id": 94,
+      "category": "الاختبارات والتدقيق",
       "command": "/audit",
-      "description": "Catalog only; not implemented"
+      "description": "تدقيق مشروع",
+      "inputs": "الملفات والادعاءات",
+      "outputs": "مصفوفة أدلة",
+      "example": "/audit الهدف: BLACK-K92N-WOLF؛ المدخلات: الملفات والادعاءات",
+      "acceptance": "تطابق ادعاء ودليل",
+      "type": "فحص مشروط بالأدلة"
     },
     {
       "id": 95,
+      "category": "الاختبارات والتدقيق",
       "command": "/acceptance-gate",
-      "description": "Catalog only; not implemented"
+      "description": "بوابة قبول",
+      "inputs": "معايير ونتائج",
+      "outputs": "قرار قبول",
+      "example": "/acceptance-gate الهدف: BLACK-K92N-WOLF؛ المدخلات: معايير ونتائج",
+      "acceptance": "لا نجاح بلا إثبات",
+      "type": "فحص مشروط بالأدلة"
     },
     {
       "id": 96,
+      "category": "التعلم والبحث",
       "command": "/research",
-      "description": "Catalog only; not implemented"
+      "description": "بحث موثق",
+      "inputs": "سؤال ونطاق",
+      "outputs": "تقرير مصادر",
+      "example": "/research الهدف: BLACK-K92N-WOLF؛ المدخلات: سؤال ونطاق",
+      "acceptance": "مصداقية وتواريخ",
+      "type": "نصي"
     },
     {
       "id": 97,
+      "category": "التعلم والبحث",
       "command": "/compare",
-      "description": "Catalog only; not implemented"
+      "description": "مقارنة بدائل",
+      "inputs": "الخيارات والمعايير",
+      "outputs": "مصفوفة قرار",
+      "example": "/compare الهدف: BLACK-K92N-WOLF؛ المدخلات: الخيارات والمعايير",
+      "acceptance": "أوزان ومصادر",
+      "type": "نصي"
     },
     {
       "id": 98,
+      "category": "التعلم والبحث",
       "command": "/learn-path",
-      "description": "Catalog only; not implemented"
+      "description": "مسار تعلم",
+      "inputs": "المستوى والهدف",
+      "outputs": "خطة دراسية",
+      "example": "/learn-path الهدف: BLACK-K92N-WOLF؛ المدخلات: المستوى والهدف",
+      "acceptance": "مشاريع وتقييم",
+      "type": "نصي"
     },
     {
       "id": 99,
+      "category": "التعلم والبحث",
       "command": "/explain",
-      "description": "Catalog only; not implemented"
+      "description": "شرح تقني",
+      "inputs": "المفهوم والسياق",
+      "outputs": "شرح منظم",
+      "example": "/explain الهدف: BLACK-K92N-WOLF؛ المدخلات: المفهوم والسياق",
+      "acceptance": "أمثلة صحيحة",
+      "type": "نصي"
     },
     {
       "id": 100,
+      "category": "التعلم والبحث",
       "command": "/fact-check",
-      "description": "Catalog only; not implemented"
+      "description": "التحقق من ادعاء",
+      "inputs": "الادعاء والمصدر",
+      "outputs": "حكم مع أدلة",
+      "example": "/fact-check الهدف: BLACK-K92N-WOLF؛ المدخلات: الادعاء والمصدر",
+      "acceptance": "مصادر أولية عند الإمكان",
+      "type": "نصي"
     }
   ]
 }
