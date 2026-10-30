@@ -1,0 +1,73 @@
+name: Mobile S1 Evidence Gate
+on:
+  pull_request:
+    branches: [main, development]
+    paths:
+      - 'BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/**'
+      - '.github/workflows/mobile-s1-ci.yml'
+      - 'scripts/check-mobile-s1.py'
+  push:
+    branches: ['development/**', development]
+    paths:
+      - 'BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/**'
+      - '.github/workflows/mobile-s1-ci.yml'
+      - 'scripts/check-mobile-s1.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mobile-s1-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-gate:
+    name: Source completeness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required S1 files (fail closed)
+        run: python3 scripts/check-mobile-s1.py BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+  node-ci:
+    name: Node tests, typecheck and Expo export
+    needs: source-gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json
+      - name: Install exact dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run source tests
+        run: npm test
+      - name: TypeScript gate
+        run: npm run typecheck
+      - name: Expo bundle / Metro export (not native builds)
+        run: npx expo export --platform all --output-dir dist
+      - name: Upload Metro export
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-s1-metro-export
+          path: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/dist/
+          if-no-files-found: error
+          retention-days: 14
+  gate-summary:
+    name: S1 CI gate
+    needs: [source-gate, node-ci]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail unless all required jobs pass
+        env:
+          SOURCE_RESULT: ${{ needs.source-gate.result }}
+          NODE_RESULT: ${{ needs.node-ci.result }}
+        run: |
+          echo "Source gate: $SOURCE_RESULT"
+          echo "Node gate: $NODE_RESULT"
+          test "$SOURCE_RESULT" = success
+          test "$NODE_RESULT" = success
