@@ -1,0 +1,33 @@
+
+> black-k92n-wolf-mobile@1.0.0-s1 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: royal design palette has expected canonical values
+ok 1 - royal design palette has expected canonical values
+# Subtest: spacing is monotonic and divisible by four
+ok 2 - spacing is monotonic and divisible by four
+# Subtest: all colors use 6 digit hex codes
+ok 3 - all colors use 6 digit hex codes
+# Subtest: primary and secondary text meet WCAG AA normal-text contrast
+ok 4 - primary and secondary text meet WCAG AA normal-text contrast
+# Subtest: all five tab routes and splash exist
+ok 5 - all five tab routes and splash exist
+# Subtest: splash never fabricates authenticated session
+ok 6 - splash never fabricates authenticated session
+# Subtest: every tab is declared in navigation
+ok 7 - every tab is declared in navigation
+# Subtest: all UI states are distinct and have safe Arabic descriptions
+ok 8 - all UI states are distinct and have safe Arabic descriptions
+# Subtest: HTTP error mapping is explicit and fail-closed
+ok 9 - HTTP error mapping is explicit and fail-closed
+# Subtest: only safe reads may automatically retry server failures
+ok 10 - only safe reads may automatically retry server failures
+# Subtest: unknown state is rejected
+ok 11 - unknown state is rejected
+1..11
+# tests 11
+# pass 11
+# fail 0
+# skipped 0
+# todo 0
