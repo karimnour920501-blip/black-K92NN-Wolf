@@ -1,0 +1,506 @@
+{
+  "version": "1.0",
+  "count": 100,
+  "commands": [
+    {
+      "id": 1,
+      "command": "/design-brief",
+      "description": "Design brief draft"
+    },
+    {
+      "id": 2,
+      "command": "/brand-system",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 3,
+      "command": "/logo-concept",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 4,
+      "command": "/poster-art",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 5,
+      "command": "/social-kit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 6,
+      "command": "/ui-wireframe",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 7,
+      "command": "/ui-design",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 8,
+      "command": "/ux-audit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 9,
+      "command": "/design-tokens",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 10,
+      "command": "/component-spec",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 11,
+      "command": "/responsive",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 12,
+      "command": "/accessibility",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 13,
+      "command": "/design-critique",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 14,
+      "command": "/image-edit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 15,
+      "command": "/design-handoff",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 16,
+      "command": "/plan",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 17,
+      "command": "/role",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 18,
+      "command": "/architect",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 19,
+      "command": "/reverse",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 20,
+      "command": "/build",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 21,
+      "command": "/api-design",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 22,
+      "command": "/domain-model",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 23,
+      "command": "/database-schema",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 24,
+      "command": "/refactor",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 25,
+      "command": "/debug",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 26,
+      "command": "/code-review",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 27,
+      "command": "/performance",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 28,
+      "command": "/event-sourcing",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 29,
+      "command": "/replay",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 30,
+      "command": "/distributed-systems",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 31,
+      "command": "/integration",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 32,
+      "command": "/migration",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 33,
+      "command": "/technical-debt",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 34,
+      "command": "/documentation",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 35,
+      "command": "/eli5",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 36,
+      "command": "/app-spec",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 37,
+      "command": "/mvp",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 38,
+      "command": "/user-stories",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 39,
+      "command": "/user-flow",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 40,
+      "command": "/frontend",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 41,
+      "command": "/backend",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 42,
+      "command": "/mobile-app",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 43,
+      "command": "/auth",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 44,
+      "command": "/multi-tenant",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 45,
+      "command": "/payments",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 46,
+      "command": "/notifications",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 47,
+      "command": "/realtime",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 48,
+      "command": "/offline-first",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 49,
+      "command": "/app-analytics",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 50,
+      "command": "/release-readiness",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 51,
+      "command": "/agent",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 52,
+      "command": "/agent-workflow",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 53,
+      "command": "/mcp-audit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 54,
+      "command": "/mcp-server",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 55,
+      "command": "/tool-policy",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 56,
+      "command": "/rag",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 57,
+      "command": "/prompt-engineering",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 58,
+      "command": "/agent-eval",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 59,
+      "command": "/human-in-loop",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 60,
+      "command": "/model-routing",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 61,
+      "command": "/security",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 62,
+      "command": "/threat-model",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 63,
+      "command": "/authz-audit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 64,
+      "command": "/secrets-audit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 65,
+      "command": "/dependency-audit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 66,
+      "command": "/api-security",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 67,
+      "command": "/privacy-design",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 68,
+      "command": "/secure-code",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 69,
+      "command": "/incident-response",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 70,
+      "command": "/security-evidence",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 71,
+      "command": "/dockerize",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 72,
+      "command": "/ci-cd",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 73,
+      "command": "/deploy",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 74,
+      "command": "/kubernetes",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 75,
+      "command": "/terraform",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 76,
+      "command": "/observability",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 77,
+      "command": "/backup-restore",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 78,
+      "command": "/ha-design",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 79,
+      "command": "/cost-optimize",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 80,
+      "command": "/rollback",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 81,
+      "command": "/swot",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 82,
+      "command": "/tows",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 83,
+      "command": "/market-research",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 84,
+      "command": "/pricing",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 85,
+      "command": "/business-model",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 86,
+      "command": "/content-strategy",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 87,
+      "command": "/copywriting",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 88,
+      "command": "/seo-brief",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 89,
+      "command": "/campaign",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 90,
+      "command": "/content-repurpose",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 91,
+      "command": "/test",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 92,
+      "command": "/integration-test",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 93,
+      "command": "/load-test",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 94,
+      "command": "/audit",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 95,
+      "command": "/acceptance-gate",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 96,
+      "command": "/research",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 97,
+      "command": "/compare",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 98,
+      "command": "/learn-path",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 99,
+      "command": "/explain",
+      "description": "Catalog only; not implemented"
+    },
+    {
+      "id": 100,
+      "command": "/fact-check",
+      "description": "Catalog only; not implemented"
+    }
+  ]
+}
