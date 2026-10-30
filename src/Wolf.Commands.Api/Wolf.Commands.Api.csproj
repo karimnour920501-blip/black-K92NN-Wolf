@@ -9,6 +9,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="commands.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="commands.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
