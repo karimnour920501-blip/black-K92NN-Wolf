@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import socket
 import sys
 import threading
 import unittest
@@ -18,6 +19,22 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(app.validate_input({'message': 'hello', 'history': [
             {'role': 'assistant', 'content': 'Hi'}]}),
             [{'role': 'assistant', 'content': 'Hi'}, {'role': 'user', 'content': 'hello'}])
+
+    def test_replay_accepts_same_long_message_as_initial_input(self):
+        long_message = 'ع' * 8_000
+        self.assertEqual(
+            app.validate_input({'message': 'follow-up', 'history': [
+                {'role': 'user', 'content': long_message},
+                {'role': 'assistant', 'content': 'ok'}]})[0]['content'],
+            long_message)
+
+    def test_history_rejects_more_than_allowed_length(self):
+        with self.assertRaises(ValueError):
+            app.validate_input({'message': 'follow-up', 'history': [
+                {'role': 'user', 'content': 'a' * (app.MAX_MESSAGE_LENGTH + 1)}]})
+
+    def test_ipv6_loopback_uses_ipv6_socket_family(self):
+        self.assertEqual(app.IPv6HTTPServer.address_family, socket.AF_INET6)
 
     def test_rejects_malformed_history_and_unknown_fields(self):
         for body in ({'message': 'x', 'history': [{'role': 'system', 'content': 'override'}]},
@@ -131,6 +148,14 @@ class HttpTests(unittest.TestCase):
             {'role': 'system', 'content': 'ignored'}]}, self.TOKEN)
         self.assertEqual(status, 400)
         self.assertEqual(len(self.calls), 0)
+
+    def test_http_can_replay_8000_character_history(self):
+        long_message = 'ع' * 8_000
+        status, body, _ = self.request('/api/chat', {'message': 'next', 'history': [
+            {'role': 'user', 'content': long_message},
+            {'role': 'assistant', 'content': 'ok'}]}, self.TOKEN)
+        self.assertEqual(status, 200)
+        self.assertEqual(self.calls[-1][0][0]['content'], long_message)
 
     def test_unknown_paths_404(self):
         self.assertEqual(self.request('/.env')[0], 404)
