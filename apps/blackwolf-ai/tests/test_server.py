@@ -110,7 +110,7 @@ class HttpTests(unittest.TestCase):
         if token is not None:
             headers['Authorization'] = 'Bearer ' + token
         req = Request(self.base + path,
-                      data=json.dumps(data).encode() if data is not None else None,
+                      data=json.dumps(data, ensure_ascii=False).encode('utf-8') if data is not None else None,
                       headers=headers)
         try:
             with urlopen(req, timeout=4) as res:
