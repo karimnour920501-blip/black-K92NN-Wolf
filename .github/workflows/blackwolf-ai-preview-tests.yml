@@ -1,0 +1,30 @@
+name: BLACKWOLF AI preview isolated tests (non-release)
+on:
+  pull_request:
+    paths:
+      - 'apps/blackwolf-ai/**'
+      - '.github/workflows/blackwolf-ai-preview-tests.yml'
+  push:
+    branches:
+      - 'development/blackwolf-ai-page-safe-integration'
+    paths:
+      - 'apps/blackwolf-ai/**'
+      - '.github/workflows/blackwolf-ai-preview-tests.yml'
+permissions:
+  contents: read
+jobs:
+  unittest:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Compile source
+        working-directory: apps/blackwolf-ai
+        run: python -m py_compile server.py tests/test_server.py
+      - name: Run offline unit and HTTP tests (no API key)
+        working-directory: apps/blackwolf-ai
+        run: python -m unittest discover -s tests -v
+      - name: No production deployment
+        run: echo 'production_ready=false; this workflow uses mocked OpenAI responses'
