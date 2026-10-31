@@ -129,7 +129,7 @@ def handler_factory(*, access_token, api_key, model, project_id=None, complete=c
     limiter = rate_limiter or RateLimiter()
 
     class Handler(BaseHTTPRequestHandler):
-        def log_message(self, fmt, *args):
+        def log_message(self, format, *args):
             # Do not log query strings, messages, Authorization or provider errors.
             pass
 
