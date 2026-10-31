@@ -88,13 +88,17 @@ def main() -> int:
                     try:
                         with contextlib.redirect_stdout(redirected), contextlib.redirect_stderr(redirected):
                             exec(compile(request['code'], '<model-exec>', 'exec'), namespace, namespace)
-                    except Exception as exc:
-                        logs.append(f'EXECUTION_FAILED: {type(exc).__name__}')
-                    combined = (redirected.getvalue() + '\n'.join(logs))[:12000]
-                    observations.insert(0, {'type': 'input_text', 'text': combined or 'ok'})
-                    # Always send a fresh screenshot after the action batch.
-                    observations.append(screenshot_item(page.screenshot(type='png')))
-                    reply = {'session_id': request['session_id'], 'output': observations}
+                    except Exception:
+                        # A failed guest action is not a successful observation.
+                        # Do not return partial logs, screenshots or exception details.
+                        reply = {'session_id': request['session_id'],
+                                 'error': 'EXECUTION_FAILED'}
+                    else:
+                        combined = (redirected.getvalue() + '\n'.join(logs))[:12000]
+                        observations.insert(0, {'type': 'input_text', 'text': combined or 'ok'})
+                        # Return a fresh screenshot only for a completed action batch.
+                        observations.append(screenshot_item(page.screenshot(type='png')))
+                        reply = {'session_id': request['session_id'], 'output': observations}
                 except Exception as exc:
                     reply = {'error': type(exc).__name__}
                 print(json.dumps(reply, ensure_ascii=False, separators=(',', ':')), flush=True)

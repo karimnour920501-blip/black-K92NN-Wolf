@@ -85,7 +85,16 @@ class Sandbox:
         except json.JSONDecodeError as exc:
             self.close()
             raise SandboxError('malformed sandbox reply') from exc
+        if not isinstance(result, dict):
+            self.close()
+            raise SandboxError('sandbox returned a non-object reply')
+        if result.get('error') is not None:
+            # Terminate the worker, rather than treating a failed script as a
+            # normal tool observation and allowing subsequent actions.
+            self.close()
+            raise SandboxError('isolated worker rejected execution')
         if result.get('session_id') != session_id or not isinstance(result.get('output'), list):
+            self.close()
             raise SandboxError('sandbox returned error or mismatched session')
         return result
 
