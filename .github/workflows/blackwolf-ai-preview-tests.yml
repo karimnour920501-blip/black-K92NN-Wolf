@@ -21,6 +21,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Install Python type checker
+        run: python -m pip install pyright
+      - name: Run Pyright on BLACKWOLF AI backend
+        working-directory: apps/blackwolf-ai
+        run: |
+          pyright --version
+          pyright server.py
       - name: Compile source
         working-directory: apps/blackwolf-ai
         run: python -m py_compile server.py tests/test_server.py
