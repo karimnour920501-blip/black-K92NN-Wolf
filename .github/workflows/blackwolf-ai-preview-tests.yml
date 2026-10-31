@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Install Python type checker
-        run: python -m pip install pyright
+        run: python -m pip install pyright==1.1.414
       - name: Run Pyright on BLACKWOLF AI backend
         working-directory: apps/blackwolf-ai
         run: |
