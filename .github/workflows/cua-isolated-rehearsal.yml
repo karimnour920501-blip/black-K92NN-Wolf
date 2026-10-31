@@ -35,4 +35,26 @@ jobs:
           if-no-files-found: warn
       - name: Production status remains unverified
         if: always()
-        run: echo 'docker_isolation=unverified;live_api=unverified;production_ready=false'
+        run: echo 'live_api=unverified;production_ready=false;see_docker_job_for_isolation'
+
+  docker-offline-sandbox:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: components/computer-use
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Build isolated Playwright worker
+        run: docker build -t wolf-cua-worker:local .
+      - name: Run fixture inside networkless read-only Docker worker
+        run: python -m wolf_cua.cli --output evidence/docker
+      - name: Upload Docker fixture evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cua-docker-fixture-evidence
+          path: components/computer-use/evidence/docker/
+          if-no-files-found: warn
