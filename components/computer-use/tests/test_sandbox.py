@@ -18,7 +18,7 @@ class SandboxTests(unittest.TestCase):
         worker = MagicMock()
         worker.poll.return_value = None
         worker.stdin = StringIO()
-        worker.stdout = StringIO('{"session_id":"s","error":"EXECUTION_FAILED"}\\n')
+        worker.stdout = StringIO('{"session_id":"s","error":"EXECUTION_FAILED"}\n')
         sandbox = Sandbox(['mock-worker'])
         sandbox.process = worker
 
