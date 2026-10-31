@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - 'development/blackwolf-ai-page-safe-integration'
+      - 'fix/blackwolf-ai-codex-p2-20261101'
     paths:
       - 'apps/blackwolf-ai/**'
       - '.github/workflows/blackwolf-ai-preview-tests.yml'
@@ -26,5 +27,8 @@ jobs:
       - name: Run offline unit and HTTP tests (no API key)
         working-directory: apps/blackwolf-ai
         run: python -m unittest discover -s tests -v
+      - name: Run browser client replay tests (no live API)
+        working-directory: apps/blackwolf-ai
+        run: node --test tests/test_client.cjs
       - name: No production deployment
         run: echo 'production_ready=false; this workflow uses mocked OpenAI responses'
