@@ -1,0 +1,39 @@
+name: Verify Hetzner Cloud connection
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: hetzner-staging-connection-check
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Read-only API health check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: hetzner-staging
+    steps:
+      - name: Verify dedicated project token without logging it
+        shell: bash
+        env:
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+          if [[ -z "${HCLOUD_TOKEN:-}" ]]; then
+            echo '::error::Missing HCLOUD_TOKEN in environment hetzner-staging.'
+            exit 1
+          fi
+          status="$(curl --silent --show-error --connect-timeout 10 --max-time 25 \
+            --output /dev/null --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${HCLOUD_TOKEN}" \
+            --header 'Accept: application/json' \
+            'https://api.hetzner.cloud/v1/servers')"
+          if [[ "$status" != '200' ]]; then
+            echo "::error::Hetzner API verification failed (HTTP ${status})."
+            exit 1
+          fi
+          echo '::notice::Hetzner API is reachable and the project token is valid. No resources were changed.'
