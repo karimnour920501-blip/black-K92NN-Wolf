@@ -54,15 +54,13 @@ class BrowserLoopRehearsal(unittest.TestCase):
         with Sandbox.local_rehearsal() as sandbox:
             first = sandbox.execute('same-session', 'run_counter = 40')
             second = sandbox.execute('same-session', 'run_counter += 2; log(run_counter)')
-            try:
-                blocked = sandbox.execute('same-session',
-                         "page.goto('https://example.com'); log('unexpected')")
-            except SandboxError:
-                blocked = None  # fail-closed is acceptable when navigation disrupts page
+            with self.assertRaisesRegex(SandboxError, 'rejected execution'):
+                sandbox.execute('same-session',
+                                "page.goto('https://example.com'); log('unexpected')")
+            # A rejected browser action must invalidate the worker session.
+            with self.assertRaisesRegex(SandboxError, 'not running'):
+                sandbox.execute('same-session', "log('should not run')")
         self.assertEqual(second['output'][0]['text'].strip(), '42')
-        if blocked is not None:
-            self.assertIn('EXECUTION_FAILED', blocked['output'][0]['text'])
-            self.assertNotIn('unexpected', blocked['output'][0]['text'])
 
 
 if __name__ == '__main__': unittest.main()
