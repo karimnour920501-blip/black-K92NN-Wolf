@@ -61,6 +61,8 @@ def main() -> int:
         page.set_content(FIXTURE)
         namespace: dict[str, Any] = {'browser': browser, 'context': context,
                                      'page': page, 'time': time}
+        # Startup is allowed a separate deadline from each code-execution turn.
+        print(json.dumps({'ready': True}), flush=True)
         try:
             for line in sys.stdin:
                 try:

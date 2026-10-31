@@ -17,6 +17,7 @@ class SandboxError(RuntimeError):
 class Sandbox:
     command: list[str]
     timeout_seconds: int = 15
+    startup_timeout_seconds: int = 50
     env: dict[str, str] | None = None
 
     def __post_init__(self) -> None:
@@ -45,7 +46,20 @@ class Sandbox:
             self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL, text=True, bufsize=1, env=self.env,
         )
-        return self
+        try:
+            assert self.process.stdout is not None
+            ready, _, _ = select.select([self.process.stdout], [], [], self.startup_timeout_seconds)
+            if not ready:
+                raise SandboxError('sandbox browser startup deadline exceeded')
+            line = self.process.stdout.readline(2048)
+            if json.loads(line) != {'ready': True}:
+                raise SandboxError('sandbox did not acknowledge browser readiness')
+            return self
+        except Exception as exc:
+            self.close()
+            if isinstance(exc, SandboxError):
+                raise
+            raise SandboxError('sandbox browser failed during startup') from exc
 
     def execute(self, session_id: str, code: str) -> dict:
         process = self.process
