@@ -1,0 +1,89 @@
+name: Mobile S6 Evidence and Release Readiness (NOT production)
+on:
+  pull_request:
+    branches: [main, development/mobile-mvp-s1-evidence]
+    paths:
+      - 'BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/**'
+      - 'mobile/s6/**'
+      - 'scripts/s6-release-gate.mjs'
+      - 'scripts/tests/s6-release-gate.test.mjs'
+      - '.github/workflows/mobile-s6-evidence.yml'
+  push:
+    branches: [development/mobile-mvp-s6-evidence-gate-20261101]
+    paths:
+      - 'BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/**'
+      - 'mobile/s6/**'
+      - 'scripts/s6-release-gate.mjs'
+      - 'scripts/tests/s6-release-gate.test.mjs'
+      - '.github/workflows/mobile-s6-evidence.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mobile-s6-evidence-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  evidence-policy-tests:
+    name: Evidence policy and source integrity
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check Expo source tree exists
+        run: python3 scripts/check-mobile-s1.py BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+      - name: Exercise release gate including pending-must-block regression
+        run: node --test scripts/tests/s6-release-gate.test.mjs
+  app-source-checks:
+    name: Expo tests, TypeScript, Metro and mandatory lint
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Unit source tests
+        run: npm test
+      - name: TypeScript check
+        run: npm run typecheck
+      - name: Require real lint script (S6 blocking requirement)
+        run: |
+          node -e "const p=require('./package.json');if(!p.scripts || !p.scripts.lint){console.error('BLOCKED: real lint script missing in package.json');process.exit(1)}"
+          npm run lint
+      - name: Metro export only (NOT native APK or IPA)
+        run: npx expo export --platform all --output-dir dist
+  dependency-security:
+    name: Production dependency audit (high and critical)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Fail on high or critical dependency vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
+  release-evidence:
+    name: Manual S6 release gate (must pass before release; NOT production)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Require complete artifact evidence for current commit
+        run: node scripts/s6-release-gate.mjs mobile/s6/release-evidence.json
