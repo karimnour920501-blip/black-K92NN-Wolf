@@ -1,0 +1,37 @@
+name: BLACKWOLF OpenAI live connectivity (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type YES_ONE_LIVE_OPENAI_CALL to authorize one paid Responses API request'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blackwolf-openai-live-smoke
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: inputs.confirm == 'YES_ONE_LIVE_OPENAI_CALL'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    environment: openai-live-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Probe OpenAI once (no provider output logged)
+        working-directory: apps/blackwolf-ai
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_PROJECT_ID: ${{ secrets.OPENAI_PROJECT_ID }}
+          OPENAI_MODEL: gpt-6-luna
+        run: python -B verify_openai.py
+      - name: No production deployment or credentials export
+        if: always()
+        run: echo 'live_smoke_only=true; production_ready=false'
