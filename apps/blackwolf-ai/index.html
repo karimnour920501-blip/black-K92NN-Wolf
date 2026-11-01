@@ -29,7 +29,7 @@ button{border:0;border-radius:10px;background:#d2ae69;color:#18140d;font:inherit
 <input id="token" type="password" autocomplete="off" placeholder="BLACKWOLF_ACCESS_TOKEN" aria-describedby="security-note">
 <p class="note" id="security-note">لا تضع مفتاح OpenAI هنا. أدخل فقط رمز الوصول الذي ضبطته على الخادم. لا يُحفظ في المتصفح.</p>
 </section>
-<section aria-labelledby="chat-title"><h2 id="chat-title">المساعد الهندسي</h2>
+<section aria-labelledby="chat-title"><h2 id="chat-title">المساعد الهندسي</h2><button id="reset" type="button" aria-label="بدء محادثة جديدة">محادثة جديدة</button>
 <div id="messages" class="messages" role="log" aria-live="polite" aria-label="الرسائل"><div class="bubble">أهلاً بك في BLACKWOLF AI. بعد إعداد الخادم ورمز الوصول، اكتب سؤالك للبدء.</div></div>
 <form id="form"><label for="message">رسالتك</label><div class="row"><textarea id="message" required maxlength="8000" placeholder="كيف أختبر صحة ربط OpenAI مع الخادم؟"></textarea><button id="send" type="submit">إرسال</button></div></form>
 <p id="error" role="alert"></p></section>
@@ -39,6 +39,29 @@ button{border:0;border-radius:10px;background:#d2ae69;color:#18140d;font:inherit
 'use strict';
 const $ = id => document.getElementById(id);
 const history = [];
+const MAX_REQUEST_BYTES = 39000; // Server caps the complete UTF-8 request at 40,000 bytes.
+const MAX_HISTORY = 8;
+// Replayed history consists of user/assistant pairs. Remove oldest pairs
+// until the serialized UTF-8 request stays below the backend's byte cap.
+function prepareRequest(message) {
+ const previous = history.slice(-MAX_HISTORY);
+ let body = JSON.stringify({message, history:previous});
+ while (new TextEncoder().encode(body).byteLength > MAX_REQUEST_BYTES && previous.length) {
+  previous.splice(0, 2);
+  body = JSON.stringify({message, history:previous});
+ }
+ if (new TextEncoder().encode(body).byteLength > MAX_REQUEST_BYTES)
+  throw new Error('message_too_large');
+ return {body, previous};
+}
+$('reset').addEventListener('click', () => {
+ if ($('send').disabled) return;
+ history.length = 0;
+ $('messages').replaceChildren();
+ addMessage('assistant', 'محادثة جديدة. كيف يمكنني مساعدتك؟');
+ $('message').value = '';
+ $('error').textContent = '';
+});
 function addMessage(role, text){const div=document.createElement('div');div.className='bubble '+(role==='user'?'user':'assistant');div.textContent=text;$('messages').appendChild(div);$('messages').scrollTop=$('messages').scrollHeight;}
 async function loadStatus(){try{const res=await fetch('/api/status',{cache:'no-store'});if(!res.ok)throw Error('status');const s=await res.json();$('status').textContent=s.key_configured?('إعداد المفتاح موجود · النموذج: '+s.model+' · الاتصال الفعلي لم يُتحقق منه'):'مفتاح OpenAI غير مضبوط على الخادم';}catch(_){$('status').textContent='تعذر الوصول إلى خادم BLACKWOLF AI';}}
 $('form').addEventListener('submit',async event=>{
@@ -46,16 +69,18 @@ $('form').addEventListener('submit',async event=>{
  const message=$('message').value.trim(),token=$('token').value;
  if(!message)return;
  if(!token){$('error').textContent='أدخل رمز الوصول المحلي أولاً.';return;}
- const previous=history.slice(-8);$('send').disabled=true;
+ $('send').disabled=true;$('reset').disabled=true;
  try{
-  const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({message,history:previous})});
+  const {body, previous} = prepareRequest(message);
+  const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body});
   const data=await response.json();
   if(!response.ok)throw Error(data.error||'request_failed');
   if(typeof data.reply!=='string')throw Error('invalid_response');
-  addMessage('user',message);addMessage('assistant',data.reply);history.push({role:'user',content:message},{role:'assistant',content:data.reply});
+  addMessage('user',message);addMessage('assistant',data.reply);
+  history.splice(0, history.length, ...previous, {role:'user',content:message},{role:'assistant',content:data.reply});
   $('message').value='';
  }catch(err){$('error').textContent='تعذر إرسال الرسالة: '+err.message+' . تحقق من إعدادات الخادم والصلاحيات.';}
- finally{$('send').disabled=false;}
+ finally{$('send').disabled=false;$('reset').disabled=false;}
 });
 loadStatus();
 </script>

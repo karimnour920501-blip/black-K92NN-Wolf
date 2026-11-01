@@ -8,6 +8,7 @@ import hmac
 import json
 import os
 import secrets
+import socket
 import threading
 import time
 from collections import defaultdict, deque
@@ -52,7 +53,7 @@ def validate_input(body):
                 or item['role'] not in ('user', 'assistant')
                 or not isinstance(item['content'], str)
                 or not item['content'].strip()
-                or len(item['content']) > 4_000):
+                or len(item['content']) > MAX_MESSAGE_LENGTH):
             raise ValueError('invalid_history')
         inputs.append({'role': item['role'], 'content': item['content']})
     inputs.append({'role': 'user', 'content': message})
@@ -128,7 +129,7 @@ def handler_factory(*, access_token, api_key, model, project_id=None, complete=c
     limiter = rate_limiter or RateLimiter()
 
     class Handler(BaseHTTPRequestHandler):
-        def log_message(self, fmt, *args):
+        def log_message(self, format, *args):
             # Do not log query strings, messages, Authorization or provider errors.
             pass
 
@@ -191,6 +192,11 @@ def handler_factory(*, access_token, api_key, model, project_id=None, complete=c
     return Handler
 
 
+class IPv6HTTPServer(ThreadingHTTPServer):
+    """Use an IPv6 socket for the explicitly permitted IPv6 loopback host."""
+    address_family = socket.AF_INET6
+
+
 def main():
     p = argparse.ArgumentParser(description='BLACKWOLF AI local chat preview')
     p.add_argument('--host', default='127.0.0.1')
@@ -204,9 +210,11 @@ def main():
     api_key = os.getenv('OPENAI_API_KEY', '')
     model = os.getenv('OPENAI_MODEL', MODEL_DEFAULT)
     project_id = os.getenv('OPENAI_PROJECT_ID')
-    server = ThreadingHTTPServer((args.host, args.port), handler_factory(
+    server_type = IPv6HTTPServer if args.host == '::1' else ThreadingHTTPServer
+    server = server_type((args.host, args.port), handler_factory(
         access_token=token, api_key=api_key, model=model, project_id=project_id))
-    print(f'BLACKWOLF AI local preview: http://{args.host}:{args.port}', flush=True)
+    address = f'[{args.host}]' if args.host == '::1' else args.host
+    print(f'BLACKWOLF AI local preview: http://{address}:{args.port}', flush=True)
     if not api_key:
         print('OPENAI_API_KEY not configured; /api/chat is disabled.', flush=True)
     try:
