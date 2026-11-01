@@ -74,8 +74,41 @@ jobs:
           cache: npm
           cache-dependency-path: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json
       - run: npm ci --no-audit --no-fund
-      - name: Fail on high or critical dependency vulnerabilities
-        run: npm audit --omit=dev --audit-level=high
+      - name: Save machine-readable audit evidence and fail on high or critical
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev --json > ../mobile-s6-dependency-audit.json
+          audit_exit=$?
+          set -e
+          node - <<'NODE'
+          const fs = require('node:fs');
+          let audit;
+          try { audit = JSON.parse(fs.readFileSync('../mobile-s6-dependency-audit.json', 'utf8')); }
+          catch { console.error('BLOCKED: npm audit did not produce valid JSON'); process.exit(1); }
+          const count = audit.metadata?.vulnerabilities;
+          if (!count || typeof count.high !== 'number' || typeof count.critical !== 'number') {
+            console.error('BLOCKED: npm audit did not return complete vulnerability counts');
+            process.exit(1);
+          }
+          console.log('npm audit findings:', JSON.stringify(count));
+          if (count.high > 0 || count.critical > 0) {
+            console.error('BLOCKED: high or critical dependency advisories require remediation');
+            process.exit(1);
+          }
+          NODE
+          if [ "$audit_exit" -gt 1 ]; then
+            echo '::error::BLOCKED: npm audit encountered an operational failure'
+            exit 1
+          fi
+      - name: Upload dependency audit JSON even on security gate failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-s6-audit-${{ github.run_id }}
+          path: mobile-s6-dependency-audit.json
+          if-no-files-found: warn
+          retention-days: 14
   release-evidence:
     name: Manual S6 release gate (must pass before release; NOT production)
     if: github.event_name == 'workflow_dispatch'
