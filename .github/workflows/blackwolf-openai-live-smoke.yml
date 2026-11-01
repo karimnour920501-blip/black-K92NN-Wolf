@@ -32,7 +32,9 @@ jobs:
           # Project ID is not a credential; pin this smoke test to the intended OpenAI project.
           OPENAI_PROJECT_ID: proj_dvKpPmjuD9RUvEe2mYN4noiZ
           OPENAI_MODEL: gpt-6-luna
-        run: python -B verify_openai.py
+        run: |
+          python -B verify_openai.py --preflight
+          python -B verify_openai.py
       - name: No production deployment or credentials export
         if: always()
         run: echo 'live_smoke_only=true; production_ready=false'
