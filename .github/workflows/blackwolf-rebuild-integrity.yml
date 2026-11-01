@@ -1,0 +1,37 @@
+name: BLACK-K92N-WOLF reconstruction integrity (NOT release)
+on:
+  push:
+    branches: ['rebuild/black-k92n-wolf-unified-20261101']
+    paths:
+      - 'docs/rebuild/**'
+      - 'scripts/rebuild_gate.py'
+      - 'scripts/tests/test_rebuild_gate.py'
+      - '.github/workflows/blackwolf-rebuild-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  provenance:
+    runs-on: ubuntu-24.04
+    name: Evidence provenance and honest status
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate source map and blocked status
+        run: python scripts/rebuild_gate.py
+      - name: Run offline reconstruction invariants
+        run: python -m unittest discover -s scripts/tests -p 'test_rebuild_gate.py' -v
+      - name: Python source syntax
+        run: python -m compileall -q apps/blackwolf-ai scripts/rebuild_gate.py
+      - name: Confirm the web UI was NOT silently replaced
+        run: |
+          if test -f apps/blackwolf-ai/index.html; then
+            echo '::error::Update docs/rebuild/EVIDENCE.json and review the new web UI source'
+            exit 1
+          fi
+          echo 'Web UI remains canonical in main. This is a partial reconstruction branch.'
+      - name: No production approval
+        run: echo 'reconstruction_complete=false; production_ready=false; no_secrets_read=true'
