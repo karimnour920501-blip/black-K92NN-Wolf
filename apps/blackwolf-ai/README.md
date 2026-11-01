@@ -73,6 +73,35 @@ It prints only a status marker, not the credential, API response, or prompt.
 HTTP 401/403 usually indicates key or authorization issues; HTTP 429 may
 indicate usage or rate limits.
 
+### Selected BLACKWOLF live-test project and 401 recovery
+
+The manual smoke workflow on the review branch pins OpenAI project
+`proj_dvKpPmjuD9RUvEe2mYN4noiZ` (Besh oo's project ID is **not** an API key).
+The selected credential should be the **full, unmasked secret value** for
+`BLACKWOLF-OPENAI-LIVE-TEST` from this same project. The key name, `key_...`
+tracking ID, `user-...` owner ID, `proj_...` project ID, and screenshot's
+`sk-...IGYA` masked view **cannot authenticate**.
+
+The existing GitHub environment `openai-live-test` supplies
+`OPENAI_API_KEY`. Update the value inside that environment, which can shadow
+a repository-level secret with the same name. If OpenAI no longer shows the
+full value, create a replacement key in the same OpenAI project and place
+its secret value in the GitHub environment directly. Never paste secret
+values into chat, PRs, logs, repo files or a mobile app.
+
+To perform a **local-only validation with no API usage**:
+
+    cd apps/blackwolf-ai
+    python -B verify_openai.py --preflight
+
+This catches missing, masked, malformed, or wrong-identifier values but
+**cannot verify authenticity or scope**. The manual workflow first runs this
+offline preflight and then, only if the preflight succeeds, sends its single
+paid Responses API call. A `http_401` still means authentication was
+rejected by OpenAI; rotate or correct the project-bound secret rather than
+modifying the code or adding the public Project ID to the API key.
+
+
 **Crucial:** Success from GitHub Actions does not configure OPENAI_API_KEY
 on the local page, Hetzner VPS or any other running backend. That
 deployment needs its own secure secret configuration and live test.

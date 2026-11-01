@@ -1,9 +1,11 @@
 """Offline tests for the one-request OpenAI connection probe."""
 import io
+import contextlib
 import json
 import os
 import sys
 import unittest
+from unittest import mock
 from urllib.error import HTTPError
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -73,6 +75,84 @@ class VerifyOpenAITests(unittest.TestCase):
             self.fail("network access attempted")
         self.assertEqual(probe_module.probe("fake", model="", opener=forbidden),
                          (False, "invalid_model"))
+
+    def test_local_preflight_accepts_only_credible_key_shape(self):
+        valid = "sk-test-only-local-mocked-key-12345"
+        self.assertIsNone(probe_module.check_configuration(
+            valid, "gpt-6-luna", "proj_dvKpPmjuD9RUvEe2mYN4noiZ"))
+        for key in (
+            "", "key_tracking_identifier", "user_account_identifier",
+            "proj_dvKpPmjuD9RUvEe2mYN4noiZ",
+            "sk-...IGYA", "sk-too-short", " sk-test-only-local-mocked-key-12345",
+            "sk-test-only-local-mocked-key-12345\n",
+        ):
+            with self.subTest(key=key):
+                self.assertIsNotNone(probe_module.check_configuration(
+                    key, "gpt-6-luna", "proj_dvKpPmjuD9RUvEe2mYN4noiZ"))
+
+    def test_project_id_and_model_rejected_before_network(self):
+        key = "sk-test-only-local-mocked-key-12345"
+        self.assertEqual(probe_module.check_configuration(
+            key, "gpt-6-luna", "user_instead_of_project"),
+            "invalid_project_id")
+        self.assertEqual(probe_module.check_configuration(
+            key, "gpt-6-luna\n", "proj_test123"), "invalid_model")
+
+    def test_preflight_never_invokes_paid_api(self):
+        env = {
+            "OPENAI_API_KEY": "sk-test-only-local-mocked-key-12345",
+            "OPENAI_PROJECT_ID": "proj_dvKpPmjuD9RUvEe2mYN4noiZ",
+            "OPENAI_MODEL": "gpt-6-luna",
+        }
+        out = io.StringIO()
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(probe_module, "probe",
+                                  side_effect=AssertionError("network attempted")), \
+                contextlib.redirect_stdout(out):
+            result = probe_module.main(["--preflight"])
+        self.assertEqual(result, 0)
+        self.assertIn("authenticity NOT VERIFIED", out.getvalue())
+        self.assertNotIn(env["OPENAI_API_KEY"], out.getvalue())
+
+    def test_main_sanitizes_http_401_and_reports_recovery(self):
+        env = {
+            "OPENAI_API_KEY": "sk-test-only-local-mocked-key-12345",
+            "OPENAI_PROJECT_ID": "proj_dvKpPmjuD9RUvEe2mYN4noiZ",
+            "OPENAI_MODEL": "gpt-6-luna",
+        }
+        out = io.StringIO()
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(probe_module, "probe", return_value=(False, "http_401")) as called, \
+                contextlib.redirect_stdout(out):
+            result = probe_module.main([])
+        self.assertEqual(result, 1)
+        called.assert_called_once_with(
+            env["OPENAI_API_KEY"], model="gpt-6-luna",
+            project_id="proj_dvKpPmjuD9RUvEe2mYN4noiZ")
+        self.assertIn("http_401", out.getvalue())
+        self.assertNotIn(env["OPENAI_API_KEY"], out.getvalue())
+
+    def test_main_refuses_masked_secret_without_paid_call(self):
+        out = io.StringIO()
+        with mock.patch.dict(os.environ, {
+            "OPENAI_API_KEY": "sk-...IGYA",
+            "OPENAI_MODEL": "gpt-6-luna",
+        }, clear=True), mock.patch.object(
+                probe_module, "probe", side_effect=AssertionError("network attempted")), \
+                contextlib.redirect_stdout(out):
+            result = probe_module.main([])
+        self.assertEqual(result, 2)
+        self.assertIn("invalid_api_key_format", out.getvalue())
+        self.assertNotIn("sk-...IGYA", out.getvalue())
+
+    def test_http_401_does_not_include_provider_error_body(self):
+        def fake_open(*args, **kwargs):
+            raise HTTPError(
+                probe_module.ENDPOINT, 401, "token leaked in reason",
+                {}, io.BytesIO(b"provider could expose secret details"))
+        self.assertEqual(probe_module.probe(
+            "fake-only-secret", opener=fake_open), (False, "http_401"))
+
 
 
 if __name__ == "__main__":
