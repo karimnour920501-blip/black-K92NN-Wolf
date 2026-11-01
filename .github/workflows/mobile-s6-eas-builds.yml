@@ -1,0 +1,64 @@
+name: Mobile S6 Android+iOS EAS Test Builds (MANUAL / NOT production)
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type AUTHORIZE_ANDROID_IOS_PREVIEW_BUILDS after Expo project and Apple signing are configured'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: mobile-s6-native-build-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native-preview:
+    if: github.ref == 'refs/heads/development/mobile-mvp-s6-evidence-gate-20261101' && inputs.confirm == 'AUTHORIZE_ANDROID_IOS_PREVIEW_BUILDS'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    environment: mobile-s6-preview
+    defaults:
+      run:
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      CI: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json
+      - name: Require Expo credentials and linked EAS project BEFORE paid builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${EXPO_TOKEN:-}" ]; then
+            echo '::error::BLOCKED: EXPO_TOKEN not configured as a GitHub secret'
+            exit 1
+          fi
+          node - <<'NODE'
+          const app = require('./app.json').expo || {};
+          const id = app.extra?.eas?.projectId;
+          if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+            console.error('::error::BLOCKED: Expo project not linked; expo.extra.eas.projectId is absent or invalid');
+            process.exit(1);
+          }
+          NODE
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Verify source before preview build
+        run: |
+          npm test
+          npm run typecheck
+          node -e "const p=require('./package.json');if(!p.scripts?.lint){console.error('BLOCKED: lint missing');process.exit(1)}"
+          npm run lint
+          npm audit --omit=dev --audit-level=high
+      - name: Install EAS CLI (major 16)
+        run: npm install --global 'eas-cli@^16'
+      - name: Build Android APK and signed iOS IPA on EAS cloud
+        run: eas build --platform all --profile s6_preview --non-interactive --wait
+      - name: State that cloud build success is not S6 release approval
+        if: always()
+        run: echo 'native_build_request_only=true; e2e_qa_and_release_evidence_still_required=true'
