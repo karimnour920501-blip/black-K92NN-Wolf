@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "sprint": "S6",
+  "release": "Mobile MVP v1.0",
+  "candidate_commit": null,
+  "provenance": {
+    "source_branch": "development/mobile-mvp-s1-evidence",
+    "baseline_sha": "a5f16ae704e659dcc47daddba45b561217750121",
+    "s1_ci": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/40996051123",
+    "issue": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/issues/24"
+  },
+  "policy": "PENDING until actual build/E2E/security/accessibility/QA results. This manifest is not release approval.",
+  "gates": {
+    "android_build": {
+      "status": "pending",
+      "evidence": []
+    },
+    "ios_build": {
+      "status": "pending",
+      "evidence": []
+    },
+    "e2e_01": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "e2e_02": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "e2e_03": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "e2e_04": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "e2e_05": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "e2e_06": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "e2e_07": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "e2e_08": {
+      "status": "pending",
+      "evidence": [],
+      "platforms": []
+    },
+    "jwt_validation": {
+      "status": "pending",
+      "evidence": []
+    },
+    "rbac": {
+      "status": "pending",
+      "evidence": []
+    },
+    "tenant_isolation": {
+      "status": "pending",
+      "evidence": []
+    },
+    "accessibility": {
+      "status": "pending",
+      "evidence": []
+    },
+    "rtl_ltr": {
+      "status": "pending",
+      "evidence": []
+    },
+    "ui_states": {
+      "status": "pending",
+      "evidence": []
+    },
+    "secure_logging": {
+      "status": "pending",
+      "evidence": []
+    },
+    "backend_authorization": {
+      "status": "pending",
+      "evidence": []
+    },
+    "typescript": {
+      "status": "pending",
+      "evidence": []
+    },
+    "lint": {
+      "status": "pending",
+      "evidence": []
+    },
+    "unit_tests": {
+      "status": "pending",
+      "evidence": []
+    },
+    "integration_tests": {
+      "status": "pending",
+      "evidence": []
+    },
+    "dependency_scan": {
+      "status": "pending",
+      "evidence": []
+    },
+    "manual_qa": {
+      "status": "pending",
+      "evidence": []
+    },
+    "zero_critical_defects": {
+      "status": "pending",
+      "evidence": [],
+      "open_critical": null
+    },
+    "pr_review": {
+      "status": "pending",
+      "evidence": []
+    }
+  }
+}
