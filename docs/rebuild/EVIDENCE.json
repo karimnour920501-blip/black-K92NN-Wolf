@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "system": "BLACK-K92N-WOLF",
+  "snapshot_date": "2026-11-01",
+  "reconstruction_state": "partial-source-unified-review-only",
+  "production_ready": false,
+  "source_baselines": {
+    "web_main": {
+      "ref": "main",
+      "commit": "9ab3ad4ed2f6c94bb814947ed9ac1eb4e4bd8050",
+      "source_url": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/tree/main/apps/blackwolf-ai"
+    },
+    "mobile_s6": {
+      "ref": "development/mobile-mvp-s6-evidence-gate-20261101",
+      "commit": "a4ca99bfb1f343e30f3dc9faf349236a44a9e847",
+      "source_url": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/pull/32"
+    }
+  },
+  "traceability": {
+    "web_pr28": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/pull/28",
+    "codex_pr29": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/pull/29",
+    "smoke_pr30": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/pull/30",
+    "main_pr31": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/pull/31",
+    "mobile_s6_pr32": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/pull/32",
+    "openai_project_fix_pr34": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/pull/34",
+    "mobile_issue24": "https://github.com/karimnour920501-blip/black-K92NN-Wolf/issues/24"
+  },
+  "verification": {
+    "python_web_mock": {
+      "status": "passed",
+      "tests": 21,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41255372728"
+      ]
+    },
+    "js_web_mock": {
+      "status": "passed",
+      "tests": 3,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41255372728"
+      ]
+    },
+    "pyright": {
+      "status": "passed",
+      "errors": 0,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41255372728"
+      ]
+    },
+    "mobile_s1_source": {
+      "status": "passed",
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/40996051123"
+      ]
+    },
+    "mobile_s6_source": {
+      "status": "passed",
+      "tests": 17,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260312382"
+      ]
+    },
+    "mobile_s6_gate_tests": {
+      "status": "passed",
+      "tests": 7,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260312382"
+      ]
+    },
+    "mobile_s6_typecheck": {
+      "status": "passed",
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260312382"
+      ]
+    },
+    "mobile_s6_ast_lint": {
+      "status": "passed-limited",
+      "checked_files": 12,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260312382"
+      ]
+    },
+    "mobile_s6_metro": {
+      "status": "passed-non-native",
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260312382"
+      ]
+    },
+    "mobile_s6_dependency_audit": {
+      "status": "failed",
+      "high": 5,
+      "moderate": 25,
+      "low": 1,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260474783"
+      ]
+    },
+    "openai_live": {
+      "status": "failed-authentication",
+      "http_status": 401,
+      "evidence": [
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260244201",
+        "https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260244598"
+      ]
+    },
+    "native_android_build": {
+      "status": "unverified",
+      "evidence": []
+    },
+    "native_ios_build": {
+      "status": "unverified",
+      "evidence": []
+    },
+    "mobile_s6_device_e2e": {
+      "status": "unverified",
+      "count_verified": 0,
+      "required": 8,
+      "evidence": []
+    },
+    "mobile_jwt_rbac_tenant": {
+      "status": "not-implemented-end-to-end",
+      "evidence": []
+    },
+    "mobile_accessibility_qa": {
+      "status": "unverified",
+      "evidence": []
+    },
+    "mobile_zero_critical": {
+      "status": "unverified",
+      "evidence": []
+    }
+  },
+  "web_ui": {
+    "canonical_main_path": "apps/blackwolf-ai/index.html",
+    "copied_to_rebuild_branch": false,
+    "reason": "GitHub connector security checks blocked copying this existing HTML; original is unchanged in main."
+  },
+  "unresolved": [
+    "OpenAI API key authentication 401",
+    "PR #34 unmerged",
+    "S6 5 high audit findings",
+    "S2-S5 missing real backend/mobile features",
+    "Android and iOS native builds unverified",
+    "E2E-01..08 unverified",
+    "S6 26 gates pending"
+  ],
+  "approvals": {
+    "merge_main": false,
+    "native_paid_build": false,
+    "live_provider_request": false,
+    "production_deploy": false
+  }
+}
