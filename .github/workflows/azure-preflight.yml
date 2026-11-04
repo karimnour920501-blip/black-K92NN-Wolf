@@ -1,0 +1,23 @@
+name: Azure Deployment Preflight (no resources)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  zero-spend-preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Compile C# without Azure login
+        run: dotnet build csharp/BlackWolf.Api/BlackWolf.Api.csproj --configuration Release
+      - name: Verify Azure deployment guardrails
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/azure/DEPLOYMENT.md
+          grep -q 'DESIGN_ONLY' docs/azure/DEPLOYMENT.md
+          test -f csharp/BlackWolf.Api/.dockerignore
+          echo 'AZURE_PREFLIGHT_PASS: no Azure credentials used, no resources created'
