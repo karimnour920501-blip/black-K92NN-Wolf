@@ -1,0 +1,55 @@
+name: BLACKWOLF CSharp CI
+on:
+  push:
+    branches: [main, feature/blackwolf-csharp-ci]
+    paths:
+      - 'csharp/**'
+      - '.github/workflows/blackwolf-csharp-ci.yml'
+  pull_request:
+    paths:
+      - 'csharp/**'
+      - '.github/workflows/blackwolf-csharp-ci.yml'
+permissions:
+  contents: read
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: csharp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore BlackWolf.Api/BlackWolf.Api.csproj
+      - name: Build
+        run: dotnet build BlackWolf.Api/BlackWolf.Api.csproj --configuration Release --no-restore
+      - name: Start isolated integration stack
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD }}
+          BLACKWOLF_ADMIN_TOKEN: ${{ secrets.CI_ADMIN_TOKEN }}
+        run: |
+          test -n "$POSTGRES_PASSWORD"
+          test -n "$BLACKWOLF_ADMIN_TOKEN"
+          docker compose up --build -d
+      - name: Wait for readiness
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:8080/ready; then exit 0; fi
+            sleep 3
+          done
+          exit 1
+      - name: Smoke test
+        env:
+          BLACKWOLF_ADMIN_TOKEN: ${{ secrets.CI_ADMIN_TOKEN }}
+        run: bash tests/smoke.sh
+      - name: Teardown
+        if: always()
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD }}
+          BLACKWOLF_ADMIN_TOKEN: ${{ secrets.CI_ADMIN_TOKEN }}
+        run: |
+          if [ -n "$POSTGRES_PASSWORD" ] && [ -n "$BLACKWOLF_ADMIN_TOKEN" ]; then docker compose down -v; fi
