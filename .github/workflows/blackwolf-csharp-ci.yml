@@ -27,29 +27,22 @@ jobs:
         run: dotnet restore BlackWolf.Api/BlackWolf.Api.csproj
       - name: Build
         run: dotnet build BlackWolf.Api/BlackWolf.Api.csproj --configuration Release --no-restore
-      - name: Start isolated integration stack
-        env:
-          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD }}
-          BLACKWOLF_ADMIN_TOKEN: ${{ secrets.CI_ADMIN_TOKEN }}
+      - name: Generate ephemeral CI credentials
         run: |
-          test -n "$POSTGRES_PASSWORD"
-          test -n "$BLACKWOLF_ADMIN_TOKEN"
-          docker compose up --build -d
+          echo "POSTGRES_PASSWORD=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          echo "BLACKWOLF_ADMIN_TOKEN=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - name: Start isolated integration stack
+        run: docker compose up --build -d
       - name: Wait for readiness
         run: |
           for i in $(seq 1 40); do
             if curl -fsS http://127.0.0.1:8080/ready; then exit 0; fi
             sleep 3
           done
+          docker compose ps
           exit 1
       - name: Smoke test
-        env:
-          BLACKWOLF_ADMIN_TOKEN: ${{ secrets.CI_ADMIN_TOKEN }}
         run: bash tests/smoke.sh
       - name: Teardown
         if: always()
-        env:
-          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD }}
-          BLACKWOLF_ADMIN_TOKEN: ${{ secrets.CI_ADMIN_TOKEN }}
-        run: |
-          if [ -n "$POSTGRES_PASSWORD" ] && [ -n "$BLACKWOLF_ADMIN_TOKEN" ]; then docker compose down -v; fi
+        run: docker compose down -v
