@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: blackwolf
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: blackwolf
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blackwolf -d blackwolf"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  api:
+    build: ./BlackWolf.Api
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      BLACKWOLF_DB: Host=postgres;Database=blackwolf;Username=blackwolf;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      BLACKWOLF_ADMIN_TOKEN: ${BLACKWOLF_ADMIN_TOKEN:?Set BLACKWOLF_ADMIN_TOKEN}
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  pgdata:
