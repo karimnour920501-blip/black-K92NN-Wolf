@@ -14,7 +14,7 @@ No SSH execution, secrets vault, billing, cloud provisioning or production deplo
 4. Run `bash tests/smoke.sh` with BLACKWOLF_ADMIN_TOKEN exported.
 
 ## GitHub Actions
-Set repository Actions secrets `CI_POSTGRES_PASSWORD` and `CI_ADMIN_TOKEN` to unique random values. The workflow intentionally fails if they are absent.
+CI generates fresh ephemeral PostgreSQL and admin credentials per run; no repository secrets are required. Production credentials must be stored in a proper secret manager.
 Never commit .env or API credentials. The CI only builds and runs local containers, not production deployments.
 
 ## Limitations
