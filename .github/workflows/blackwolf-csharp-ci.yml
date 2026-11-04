@@ -43,6 +43,8 @@ jobs:
           exit 1
       - name: Smoke test
         run: bash tests/smoke.sh
+      - name: PostgreSQL RLS isolation test
+        run: docker compose exec -T postgres psql -U blackwolf -d blackwolf -v ON_ERROR_STOP=1 < tests/rls.sql
       - name: Teardown
         if: always()
         run: docker compose down -v
