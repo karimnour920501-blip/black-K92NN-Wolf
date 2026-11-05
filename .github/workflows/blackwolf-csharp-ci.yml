@@ -1,0 +1,54 @@
+name: BLACKWOLF CSharp CI
+on:
+  push:
+    branches: [main, feature/blackwolf-csharp-ci]
+    paths:
+      - 'csharp/**'
+      - '.github/workflows/blackwolf-csharp-ci.yml'
+  pull_request:
+    paths:
+      - 'csharp/**'
+      - '.github/workflows/blackwolf-csharp-ci.yml'
+permissions:
+  contents: read
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: csharp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore BlackWolf.Api/BlackWolf.Api.csproj
+      - name: Build
+        run: dotnet build BlackWolf.Api/BlackWolf.Api.csproj --configuration Release --no-restore
+      - name: Generate ephemeral CI credentials
+        run: |
+          db_password="$(openssl rand -hex 32)"
+          admin_token="$(openssl rand -hex 32)"
+          echo "::add-mask::$db_password"
+          echo "::add-mask::$admin_token"
+          echo "POSTGRES_PASSWORD=$db_password" >> "$GITHUB_ENV"
+          echo "BLACKWOLF_ADMIN_TOKEN=$admin_token" >> "$GITHUB_ENV"
+      - name: Start isolated integration stack
+        run: docker compose up --build -d
+      - name: Wait for readiness
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:8080/ready; then exit 0; fi
+            sleep 3
+          done
+          docker compose ps
+          exit 1
+      - name: Smoke test
+        run: bash tests/smoke.sh
+      - name: PostgreSQL RLS isolation test
+        run: docker compose exec -T postgres psql -U blackwolf -d blackwolf -v ON_ERROR_STOP=1 < tests/rls.sql
+      - name: Teardown
+        if: always()
+        run: docker compose down -v
