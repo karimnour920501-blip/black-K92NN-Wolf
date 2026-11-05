@@ -1,5 +1,5 @@
 -- RLS policy pilot. Run as database owner in ephemeral CI.
--- The API currently uses the owner role and DOES NOT enforce these policies yet.
+-- API switches into the restricted role transactionally; owner connection remains a production risk.
 -- A future deployment must use a separate non-owner login with no BYPASSRLS.
 DO $$
 BEGIN
@@ -7,6 +7,7 @@ BEGIN
     CREATE ROLE blackwolf_tenant_runtime NOLOGIN NOSUPERUSER NOBYPASSRLS;
   END IF;
 END $$;
+GRANT blackwolf_tenant_runtime TO blackwolf;
 GRANT USAGE ON SCHEMA public TO blackwolf_tenant_runtime;
 GRANT SELECT, INSERT ON tenant_projects TO blackwolf_tenant_runtime;
 ALTER TABLE tenant_projects ENABLE ROW LEVEL SECURITY;
