@@ -122,12 +122,20 @@ app.MapGet("/api/v1/tenant/projects", async (HttpRequest request) =>
     if (tenantId is null) return Results.Unauthorized();
     await using var conn = new NpgsqlConnection(connectionString);
     await conn.OpenAsync();
-    await using var cmd = new NpgsqlCommand("SELECT id,name,created_at FROM tenant_projects WHERE tenant_id=@tenant ORDER BY created_at DESC", conn);
-    cmd.Parameters.AddWithValue("tenant", tenantId.Value);
-    await using var reader = await cmd.ExecuteReaderAsync();
+    await using var tx = await conn.BeginTransactionAsync();
+    await using (var context = new NpgsqlCommand("SET LOCAL ROLE blackwolf_tenant_runtime; SELECT set_config('app.tenant_id', @tenant, true)", conn, tx))
+    {
+        context.Parameters.AddWithValue("tenant", tenantId.Value.ToString());
+        await context.ExecuteNonQueryAsync();
+    }
     var projects = new List<object>();
-    while (await reader.ReadAsync())
-        projects.Add(new { id = reader.GetGuid(0), name = reader.GetString(1), created_at = reader.GetDateTime(2) });
+    await using (var cmd = new NpgsqlCommand("SELECT id,name,created_at FROM tenant_projects ORDER BY created_at DESC", conn, tx))
+    await using (var reader = await cmd.ExecuteReaderAsync())
+    {
+        while (await reader.ReadAsync())
+            projects.Add(new { id = reader.GetGuid(0), name = reader.GetString(1), created_at = reader.GetDateTime(2) });
+    }
+    await tx.CommitAsync();
     return Results.Ok(projects);
 });
 app.MapPost("/api/v1/tenant/projects", async (HttpRequest request, ProjectInput input) =>
@@ -139,11 +147,20 @@ app.MapPost("/api/v1/tenant/projects", async (HttpRequest request, ProjectInput 
     var id = Guid.NewGuid();
     await using var conn = new NpgsqlConnection(connectionString);
     await conn.OpenAsync();
-    await using var cmd = new NpgsqlCommand("INSERT INTO tenant_projects(id,tenant_id,name) VALUES (@id,@tenant,@name)", conn);
-    cmd.Parameters.AddWithValue("id", id);
-    cmd.Parameters.AddWithValue("tenant", tenantId.Value);
-    cmd.Parameters.AddWithValue("name", input.Name.Trim());
-    await cmd.ExecuteNonQueryAsync();
+    await using var tx = await conn.BeginTransactionAsync();
+    await using (var context = new NpgsqlCommand("SET LOCAL ROLE blackwolf_tenant_runtime; SELECT set_config('app.tenant_id', @tenant, true)", conn, tx))
+    {
+        context.Parameters.AddWithValue("tenant", tenantId.Value.ToString());
+        await context.ExecuteNonQueryAsync();
+    }
+    await using (var cmd = new NpgsqlCommand("INSERT INTO tenant_projects(id,tenant_id,name) VALUES (@id,@tenant,@name)", conn, tx))
+    {
+        cmd.Parameters.AddWithValue("id", id);
+        cmd.Parameters.AddWithValue("tenant", tenantId.Value);
+        cmd.Parameters.AddWithValue("name", input.Name.Trim());
+        await cmd.ExecuteNonQueryAsync();
+    }
+    await tx.CommitAsync();
     return Results.Created($"/api/v1/tenant/projects/{id}", new { id, name = input.Name.Trim() });
 });
 app.Run();
