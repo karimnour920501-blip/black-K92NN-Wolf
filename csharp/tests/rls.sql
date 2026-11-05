@@ -22,4 +22,14 @@ BEGIN
  IF (SELECT count(*) FROM tenant_projects) <> 1 THEN RAISE EXCEPTION 'RLS tenant B did not see exactly one row'; END IF;
  IF EXISTS(SELECT 1 FROM tenant_projects WHERE name='private-a') THEN RAISE EXCEPTION 'RLS cross-tenant read'; END IF;
 END $$;
+SELECT set_config('app.tenant_id','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',true);
+DO $
+BEGIN
+  BEGIN
+    INSERT INTO tenant_projects(id,tenant_id,name) VALUES ('33333333-3333-4333-8333-333333333333','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','forbidden');
+    RAISE EXCEPTION 'RLS cross-tenant insert unexpectedly succeeded';
+  EXCEPTION WHEN insufficient_privilege THEN
+    NULL; -- Expected: policy denies cross-tenant insert.
+  END;
+END $;
 ROLLBACK;
