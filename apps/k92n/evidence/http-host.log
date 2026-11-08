@@ -1,0 +1,366 @@
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://127.0.0.1:41749
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /workspace/scratch/e0d8156e7763/K92N-Hosting-Ready-v1.0.0/src/K92N.Host
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/healthz - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /healthz'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType2`3' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /healthz'
+info: K92N.Host[0]
+      HTTP GET /healthz 200 12ms trace=0HNPTC1N5M9D9:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/healthz - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /healthz'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType2`3' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /healthz'
+info: K92N.Host[0]
+      HTTP GET /healthz 200 0ms trace=0HNPTC1N5M9DA:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/status - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/status - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/healthz - 200 - application/json;+charset=utf-8 0.6634ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/healthz - 200 - application/json;+charset=utf-8 110.3745ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/status - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/status - 401 - application/json;+charset=utf-8 1.3987ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/status - 401 - application/json;+charset=utf-8 1.9537ms
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/status'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/status'
+info: K92N.Host[0]
+      HTTP GET /api/status 200 0ms trace=0HNPTC1N5M9DD:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/status - 200 - application/json;+charset=utf-8 0.9090ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/accounts - application/json 41
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/accounts'
+info: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[2]
+      Sending file. Request path: '/index.html'. Physical path: '/workspace/scratch/e0d8156e7763/K92N-Hosting-Ready-v1.0.0/src/K92N.Host/wwwroot/index.html'
+info: K92N.Host[0]
+      HTTP GET /index.html 200 8ms trace=0HNPTC1N5M9DE:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/index.html - 200 3635 text/html 9.5271ms
+info: Microsoft.AspNetCore.Http.Result.CreatedResult[1]
+      Setting HTTP status code 201.
+info: Microsoft.AspNetCore.Http.Result.CreatedResult[3]
+      Writing value of type '<>f__AnonymousType4`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/accounts'
+info: K92N.Host[0]
+      HTTP POST /api/accounts 201 14ms trace=0HNPTC1N5M9DF:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/accounts - 201 - application/json;+charset=utf-8 15.1266ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/accounts - application/json 48
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/accounts'
+info: Microsoft.AspNetCore.Http.Result.CreatedResult[1]
+      Setting HTTP status code 201.
+info: Microsoft.AspNetCore.Http.Result.CreatedResult[3]
+      Writing value of type '<>f__AnonymousType4`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/accounts'
+info: K92N.Host[0]
+      HTTP POST /api/accounts 201 1ms trace=0HNPTC1N5M9DG:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/accounts - 201 - application/json;+charset=utf-8 1.1229ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/accounts - application/json 47
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/accounts'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/accounts'
+warn: K92N.Host[0]
+      Rejected STORAGE_REJECTED; trace 0HNPTC1N5M9DH:00000001
+info: K92N.Host[0]
+      HTTP POST /api/accounts 422 3ms trace=0HNPTC1N5M9DH:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/accounts - 422 - application/json;+charset=utf-8 3.7427ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 479
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType4`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 200 15ms trace=0HNPTC1N5M9DI:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 200 - application/json;+charset=utf-8 15.8969ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 479
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType4`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 200 1ms trace=0HNPTC1N5M9DJ:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 200 - application/json;+charset=utf-8 1.4836ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 477
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+warn: K92N.Host[0]
+      Rejected IDEMPOTENCY_CONFLICT; trace 0HNPTC1N5M9DK:00000001
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 409 0ms trace=0HNPTC1N5M9DK:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 409 - application/json;+charset=utf-8 1.0465ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 485
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+warn: K92N.Host[0]
+      Rejected NEGATIVE_AMOUNT; trace 0HNPTC1N5M9DL:00000001
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 422 0ms trace=0HNPTC1N5M9DL:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 422 - application/json;+charset=utf-8 0.3162ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 494
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+warn: K92N.Host[0]
+      Rejected PRECISION_VIOLATION; trace 0HNPTC1N5M9DM:00000001
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 422 0ms trace=0HNPTC1N5M9DM:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 422 - application/json;+charset=utf-8 0.2507ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 487
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+warn: K92N.Host[0]
+      Rejected UNBALANCED_ENTRY; trace 0HNPTC1N5M9DN:00000001
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 422 0ms trace=0HNPTC1N5M9DN:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 422 - application/json;+charset=utf-8 0.2690ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 494
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+warn: K92N.Host[0]
+      Rejected STORAGE_REJECTED; trace 0HNPTC1N5M9DO:00000001
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 422 1ms trace=0HNPTC1N5M9DO:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 422 - application/json;+charset=utf-8 1.3003ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 489
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 400 2ms trace=0HNPTC1N5M9DP:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 400 0 - 2.8198ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/integrity - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/integrity'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/integrity'
+info: K92N.Host[0]
+      HTTP GET /api/integrity 200 12ms trace=0HNPTC1N5M9DQ:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/integrity - 200 - application/json;+charset=utf-8 12.5958ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/customers/7/balances?accountId=2 - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/customers/{id:long}/balances'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/customers/{id:long}/balances'
+info: K92N.Host[0]
+      HTTP GET /api/customers/7/balances 200 4ms trace=0HNPTC1N5M9DR:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/customers/7/balances?accountId=2 - 200 - application/json;+charset=utf-8 5.2758ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 7
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 400 0ms trace=0HNPTC1N5M9DS:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 400 0 - 0.8078ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries/1/reversal - application/json 83
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries/{id:long}/reversal'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType4`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries/{id:long}/reversal'
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries/1/reversal 200 3ms trace=0HNPTC1N5M9DT:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries/1/reversal - 200 - application/json;+charset=utf-8 3.9535ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries/1/reversal - application/json 77
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries/{id:long}/reversal'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries/{id:long}/reversal'
+warn: K92N.Host[0]
+      Rejected STORAGE_REJECTED; trace 0HNPTC1N5M9DU:00000001
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries/1/reversal 422 1ms trace=0HNPTC1N5M9DU:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries/1/reversal - 422 - application/json;+charset=utf-8 1.7248ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/integrity - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/integrity'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/integrity'
+info: K92N.Host[0]
+      HTTP GET /api/integrity 200 1ms trace=0HNPTC1N5M9DV:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/integrity - 200 - application/json;+charset=utf-8 1.4850ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/customers/7/balances?accountId=2 - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/customers/{id:long}/balances'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/customers/{id:long}/balances'
+info: K92N.Host[0]
+      HTTP GET /api/customers/7/balances 200 0ms trace=0HNPTC1N5M9E0:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/customers/7/balances?accountId=2 - 200 - application/json;+charset=utf-8 0.9028ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/integrity?expectedHead=1111111111111111111111111111111111111111111111111111111111111111 - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/integrity'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/integrity'
+info: K92N.Host[0]
+      HTTP GET /api/integrity 200 0ms trace=0HNPTC1N5M9E1:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/integrity?expectedHead=1111111111111111111111111111111111111111111111111111111111111111 - 200 - application/json;+charset=utf-8 0.8930ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/events - application/json 99
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/events'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/events'
+info: K92N.Host[0]
+      HTTP POST /api/events 200 4ms trace=0HNPTC1N5M9E2:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/events - 200 - application/json;+charset=utf-8 5.1525ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/replay - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/replay'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/replay'
+info: K92N.Host[0]
+      HTTP GET /api/replay 200 5ms trace=0HNPTC1N5M9E3:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/replay - 200 - application/json;+charset=utf-8 5.1976ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/replay - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/replay'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/replay'
+info: K92N.Host[0]
+      HTTP GET /api/replay 200 0ms trace=0HNPTC1N5M9E4:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/replay - 200 - application/json;+charset=utf-8 0.7863ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:41749/api/events - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/events'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/events'
+info: K92N.Host[0]
+      HTTP GET /api/events 200 2ms trace=0HNPTC1N5M9E5:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:41749/api/events - 200 - application/json;+charset=utf-8 2.6490ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/events - application/json 104
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/events'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/events'
+warn: K92N.Host[0]
+      Rejected STATUS_GATE; trace 0HNPTC1N5M9E6:00000001
+info: K92N.Host[0]
+      HTTP POST /api/events 422 0ms trace=0HNPTC1N5M9E6:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/events - 422 - application/json;+charset=utf-8 0.4908ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/period_locks - application/json 25
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/period_locks'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType4`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/period_locks'
+info: K92N.Host[0]
+      HTTP POST /api/period_locks 200 1ms trace=0HNPTC1N5M9E7:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/period_locks - 200 - application/json;+charset=utf-8 1.4544ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - application/json 479
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/journal_entries'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/journal_entries'
+warn: K92N.Host[0]
+      Rejected STORAGE_REJECTED; trace 0HNPTC1N5M9E8:00000001
+info: K92N.Host[0]
+      HTTP POST /api/journal_entries 422 1ms trace=0HNPTC1N5M9E8:00000001
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:41749/api/journal_entries - 422 - application/json;+charset=utf-8 1.0918ms
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
