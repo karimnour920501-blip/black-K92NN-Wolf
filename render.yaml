@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+services:
+  - type: web
+    name: blackwolf-k92n
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    numInstances: 1
+    autoDeployTrigger: "off"
+    dockerfilePath: ./apps/k92n/infra/Dockerfile.render
+    dockerContext: ./apps/k92n
+    healthCheckPath: /healthz
+    disk:
+      name: k92n-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: K92N_OPERATOR_TOKEN
+        generateValue: true
+      - key: K92N_DATA_MOUNT
+        value: /data
+      - key: K92N_DATA_DIR
+        value: /data/k92n
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production

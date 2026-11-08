@@ -1,0 +1,145 @@
+{
+  "version": "1.0.1-local-verified",
+  "at": "2026-11-08T03:58:07.126687+00:00",
+  "production_ready": false,
+  "environment": {
+    "python": "3.12.14",
+    "sqlite": "3.53.1",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+  },
+  "runs": [
+    {
+      "id": "sql",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/e0d8156e7763/K92N-Reconstruction-v1.0.1",
+      "at": "2026-11-08T03:56:54.365908+00:00",
+      "schema_sha256": "5791d4a1b7ea0347de19853f226f8e3df796724e9e3ad58c43d5a9c533ad3af1",
+      "core_sha256": "109d5bf1e09e6fec94524ceb461dd59b384c3d1267b9b32141e98fa262595ace",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "evidence/sql.log",
+      "log_sha256": "ac019fecd887ad0864e91e7fe770c94bc79d21ce441df5e778d4c032c3bde9a9"
+    },
+    {
+      "id": "dotnet-build",
+      "command": [
+        "dotnet",
+        "build",
+        "src/K92N.Host/K92N.Host.csproj",
+        "-c",
+        "Release"
+      ],
+      "cwd": "/workspace/scratch/e0d8156e7763/K92N-Reconstruction-v1.0.1",
+      "at": "2026-11-08T03:56:54.448418+00:00",
+      "schema_sha256": "5791d4a1b7ea0347de19853f226f8e3df796724e9e3ad58c43d5a9c533ad3af1",
+      "core_sha256": "109d5bf1e09e6fec94524ceb461dd59b384c3d1267b9b32141e98fa262595ace",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "evidence/dotnet-build.log",
+      "log_sha256": "08029fba6dfb8c468667f92a6c13ca86cbff60c69506be4eef2926a7804e42cd"
+    },
+    {
+      "id": "dotnet-tests",
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tests/K92N.Tests/K92N.Tests.csproj",
+        "-c",
+        "Release"
+      ],
+      "cwd": "/workspace/scratch/e0d8156e7763/K92N-Reconstruction-v1.0.1",
+      "at": "2026-11-08T03:56:57.757018+00:00",
+      "schema_sha256": "5791d4a1b7ea0347de19853f226f8e3df796724e9e3ad58c43d5a9c533ad3af1",
+      "core_sha256": "109d5bf1e09e6fec94524ceb461dd59b384c3d1267b9b32141e98fa262595ace",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "evidence/dotnet-tests.log",
+      "log_sha256": "1d4cbefa9fc42ec3eb2dc15eae8532e496a9b433d72badb8626d89fb00edd4fe"
+    },
+    {
+      "id": "dotnet-publish",
+      "command": [
+        "dotnet",
+        "publish",
+        "src/K92N.Host/K92N.Host.csproj",
+        "-c",
+        "Release",
+        "-r",
+        "linux-x64",
+        "--self-contained",
+        "true",
+        "-o",
+        "release/linux-x64"
+      ],
+      "at": "2026-11-08T03:58:06.570088+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "evidence/dotnet-publish.log",
+      "log_sha256": "feb1bf9e80159cbb73f359202d3a7ec359415d4f6ad3434ad471de768e796faf",
+      "core_sha256": "109d5bf1e09e6fec94524ceb461dd59b384c3d1267b9b32141e98fa262595ace",
+      "schema_sha256": "5791d4a1b7ea0347de19853f226f8e3df796724e9e3ad58c43d5a9c533ad3af1",
+      "host_sha256": "f470a237f3172d28feea090eb5edd8c70a7838511dcc9756f6c69918099ee84f"
+    },
+    {
+      "id": "http",
+      "command": [
+        "python3",
+        "tools/http_smoke.py",
+        "--host-path",
+        "release/linux-x64/K92N.Host"
+      ],
+      "at": "2026-11-08T03:58:07.011016+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "evidence/http.log",
+      "log_sha256": "a76e3c35fa59e72254fce60ab30308e1d9afcb9ff7ba1af46ffb32109a993d25",
+      "core_sha256": "109d5bf1e09e6fec94524ceb461dd59b384c3d1267b9b32141e98fa262595ace",
+      "schema_sha256": "5791d4a1b7ea0347de19853f226f8e3df796724e9e3ad58c43d5a9c533ad3af1",
+      "host_sha256": "f470a237f3172d28feea090eb5edd8c70a7838511dcc9756f6c69918099ee84f"
+    },
+    {
+      "id": "docker",
+      "status": "NOT_RUN",
+      "exit_code": 127,
+      "reason": "Docker CLI is not installed; managed Docker socket /var/run/docker.sock is absent; user is non-root",
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "info"
+      ],
+      "at": "2026-11-08T03:58:07.126476+00:00",
+      "uid": 1000,
+      "managed_socket_exists": false
+    }
+  ],
+  "not_verified": [
+    "Docker",
+    "browser on phone",
+    "migration from old ledger",
+    "OIDC/RBAC/RLS",
+    "backup and disaster recovery on target device"
+  ],
+  "nuget_audit": {
+    "status": "PASS",
+    "scope": "Known NuGet advisories for restored package graph, not all OS/runtime vulnerabilities",
+    "report": "evidence/nuget-audit.json",
+    "vulnerable_packages": []
+  },
+  "build_toolchain": {
+    "sdk": "10.0.100",
+    "native_sqlite": "3.53.3",
+    "publish_rid": "linux-x64",
+    "self_contained": true
+  }
+}

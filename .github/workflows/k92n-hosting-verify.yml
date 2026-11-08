@@ -1,0 +1,47 @@
+name: K92N source and Docker verification (not production approval)
+on:
+  pull_request:
+    branches: [main]
+    paths: ['apps/k92n/**', 'render.yaml', '.github/workflows/k92n-hosting-verify.yml']
+  push:
+    branches: ['hosting/k92n-render-20261108']
+    paths: ['apps/k92n/**', 'render.yaml', '.github/workflows/k92n-hosting-verify.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/k92n
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.100'
+      - name: C# build
+        run: dotnet build src/K92N.Host/K92N.Host.csproj -c Release
+      - name: C# accounting scenarios
+        run: dotnet run --project tests/K92N.Tests/K92N.Tests.csproj -c Release
+      - name: SQLite and tooling tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Startup guard tests (test doubles)
+        run: python3 tools/test_hosting.py
+      - name: Compiled host HTTP integration
+        run: python3 tools/http_smoke.py
+      - name: Build actual Docker image
+        run: docker build --file infra/Dockerfile.render --tag k92n-render:test .
+      - name: Container persistence and HTTP checks
+        run: python3 tools/docker_smoke.py
+      - name: Retain exact CI results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k92n-verification-${{ github.sha }}
+          path: |
+            apps/k92n/evidence/docker-ci-results.json
+            apps/k92n/evidence/http-results.json
+          if-no-files-found: warn
+          retention-days: 14

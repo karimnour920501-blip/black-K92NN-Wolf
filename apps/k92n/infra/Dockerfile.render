@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY global.json Directory.Build.props ./
+COPY src/ src/
+RUN dotnet restore src/K92N.Host/K92N.Host.csproj --locked-mode
+RUN dotnet publish src/K92N.Host/K92N.Host.csproj -c Release --no-restore -o /out
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends python3 util-linux bash passwd \
+    && rm -rf /var/lib/apt/lists/* \
+    && usermod --shell /bin/bash app \
+    && install -d -m 0700 -o app -g app /home/app/.ssh \
+    && install -d -m 0700 -o app -g app /data
+WORKDIR /app
+COPY --from=build /out .
+COPY tools/backup.py /app/tools/backup.py
+COPY infra/render-entrypoint.sh /app/render-entrypoint.sh
+RUN chmod 0555 /app/render-entrypoint.sh
+ENV K92N_DATA_MOUNT=/data K92N_DATA_DIR=/data/k92n ASPNETCORE_ENVIRONMENT=Production
+USER $APP_UID
+EXPOSE 10000
+ENTRYPOINT ["/app/render-entrypoint.sh"]
