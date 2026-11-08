@@ -1,0 +1,21 @@
+SQLITE_NATIVE_VERSION=3.53.3
+PASS Balanced post and audit
+PASS Unbalanced fails and rolls back
+PASS Negative rejected
+PASS Precision rejected
+PASS Foreign currency precision
+PASS Idempotent retry
+PASS Idempotency conflict
+PASS Positive mirror reversal
+PASS Reversal retry
+PASS Second reversal blocked
+PASS Period lock
+PASS Separated balances
+PASS Hash encoding known vector
+PASS Fabricated reversal with real hashes rejected by verifier
+PASS Legacy-shaped huge line number does not crash
+PASS Malformed stored date rejected even with correct hashes
+PASS External anchor detects truncation
+PASS Replay deterministic and no verified claim
+PASS Concurrent unique requests
+Executed 19; failures 0

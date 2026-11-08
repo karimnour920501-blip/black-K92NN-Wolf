@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+.runtime/
+*.db
+*.db-wal
+*.db-shm
+.env
+*.key
+
+release/
+
+**/__pycache__/
+*.pem

@@ -1,0 +1,146 @@
+{
+  "at": "2026-11-08T06:20:49.013397+00:00",
+  "scope": "Real compiled ASP.NET Core process + SQLite + HTTP; disposable database",
+  "host_path": "/workspace/scratch/e0d8156e7763/K92N-Hosting-Ready-v1.0.0/src/K92N.Host/bin/Release/net10.0/K92N.Host.dll",
+  "source_hashes": {
+    "src/K92N.Core/Store.cs": "109d5bf1e09e6fec94524ceb461dd59b384c3d1267b9b32141e98fa262595ace",
+    "src/K92N.Core/schema.sql": "5791d4a1b7ea0347de19853f226f8e3df796724e9e3ad58c43d5a9c533ad3af1",
+    "src/K92N.Host/Program.cs": "f470a237f3172d28feea090eb5edd8c70a7838511dcc9756f6c69918099ee84f"
+  },
+  "artifact_hashes": {
+    "K92N.Host.dll": "f09bbb26e1693bb5e488bc7f9dc9bbdf19e229ab6464b87dc01cb431195524dd",
+    "K92N.Core.dll": "8d172f0d26995c305df7b2743fac39adffd4b9272ed80f6cf611148f49a7b577"
+  },
+  "checks": [
+    {
+      "name": "healthz real host",
+      "status": "PASS"
+    },
+    {
+      "name": "unauthenticated rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong token rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "authenticated status",
+      "status": "PASS"
+    },
+    {
+      "name": "API responses not cached",
+      "status": "PASS"
+    },
+    {
+      "name": "Arabic HTML served",
+      "status": "PASS"
+    },
+    {
+      "name": "create account 1",
+      "status": "PASS"
+    },
+    {
+      "name": "create account 2",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate account rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "atomic HTTP posting",
+      "status": "PASS"
+    },
+    {
+      "name": "idempotent retry returns original ID",
+      "status": "PASS"
+    },
+    {
+      "name": "idempotency conflict",
+      "status": "PASS"
+    },
+    {
+      "name": "negative rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "precision rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "unbalanced rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown account rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid date rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "rejected writes rolled back",
+      "status": "PASS"
+    },
+    {
+      "name": "customer control-account balance",
+      "status": "PASS"
+    },
+    {
+      "name": "malformed JSON rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP reversal",
+      "status": "PASS"
+    },
+    {
+      "name": "second reversal rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "mirror integrity after reversal",
+      "status": "PASS"
+    },
+    {
+      "name": "reversal clears customer balance",
+      "status": "PASS"
+    },
+    {
+      "name": "external anchor mismatch reported",
+      "status": "PASS"
+    },
+    {
+      "name": "governance event recorded",
+      "status": "PASS"
+    },
+    {
+      "name": "deterministic real replay",
+      "status": "PASS"
+    },
+    {
+      "name": "raw events exported",
+      "status": "PASS"
+    },
+    {
+      "name": "submitted verification claim blocked",
+      "status": "PASS"
+    },
+    {
+      "name": "period lock recorded",
+      "status": "PASS"
+    },
+    {
+      "name": "locked period rejects posting",
+      "status": "PASS"
+    },
+    {
+      "name": "operator token absent from logs",
+      "status": "PASS"
+    }
+  ],
+  "failure": null,
+  "production_ready": false
+}

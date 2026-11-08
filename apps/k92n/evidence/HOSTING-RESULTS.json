@@ -1,0 +1,57 @@
+{
+  "at": "2026-11-08T06:21:17.595017+00:00",
+  "project": "K92N Hosting Ready 1.0.0",
+  "scope": "local preparation only",
+  "productionReady": false,
+  "checks": {
+    "official_blueprint_schema": "PASS",
+    "schema_url": "https://render.com/schema/render.yaml.json",
+    "schema_sha256": "8a3fb8da6b4f55fe686fbefa790e011d3dd7895f013f355953c572a21ab6494a",
+    "bash_syntax": "PASS",
+    "startup_guard_tests": {
+      "pass": 12,
+      "mountpoint_and_dotnet": "TEST_DOUBLES"
+    },
+    "real_missing_mount_rejected": "PASS",
+    "release_build": {
+      "status": "PASS",
+      "warnings": 0,
+      "errors": 0
+    },
+    "csharp_scenarios": {
+      "pass": 19
+    },
+    "python_tests": {
+      "pass": 40
+    },
+    "real_local_http": {
+      "pass": 32
+    },
+    "upstream_core_unchanged": "PASS"
+  },
+  "notRun": [
+    "Docker build",
+    "Docker runtime",
+    "Render deployment",
+    "real persistent disk ownership",
+    "restart/redeploy persistence on Render",
+    "remote HTTPS",
+    "remote SSH",
+    "off-service recovery drill",
+    "iPhone validation"
+  ],
+  "external_mutations": [],
+  "blockers": [
+    "Render account integration not connected",
+    "source Git repository not selected/published",
+    "billable service cost not approved"
+  ],
+  "commands": [
+    "python3 tools/test_hosting.py",
+    "bash -n infra/render-entrypoint.sh",
+    "dotnet build src/K92N.Host/K92N.Host.csproj -c Release",
+    "dotnet run --project tests/K92N.Tests/K92N.Tests.csproj -c Release",
+    "python3 -m unittest discover -s tests -p test_*.py",
+    "python3 tools/http_smoke.py --dotnet <local-dotnet>"
+  ]
+}
