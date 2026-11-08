@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      NUGET_PACKAGES: ${{ runner.temp }}/k92n-nuget
+      NUGET_PACKAGES: ${{ github.workspace }}/.k92n-ci-nuget-${{ github.run_id }}-${{ github.run_attempt }}
     defaults:
       run:
         working-directory: apps/k92n
