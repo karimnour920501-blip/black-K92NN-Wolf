@@ -1,0 +1,30 @@
+{
+  "checkout": {
+    "tag": "v7.0.1",
+    "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "source": "https://api.github.com/repos/actions/checkout/git/ref/tags/v7.0.1"
+  },
+  "setup-dotnet": {
+    "tag": "v6.1.0",
+    "sha": "0f4a354dd5547a28c70b7853dbd95d5b67886e73",
+    "source": "https://api.github.com/repos/actions/setup-dotnet/git/ref/tags/v6.1.0"
+  },
+  "upload-artifact": {
+    "tag": "v7.0.2",
+    "sha": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+    "source": "https://api.github.com/repos/actions/upload-artifact/git/ref/tags/v7.0.2"
+  },
+  "dotnet-sdk": {
+    "tag": "10.0.100",
+    "digest": "sha256:c7445f141c04f1a6b454181bd098dcfa606c61ba0bd213d0a702489e5bd4cd71",
+    "source": "https://mcr.microsoft.com/v2/dotnet/sdk/manifests/10.0.100"
+  },
+  "dotnet-aspnet": {
+    "tag": "10.0",
+    "digest": "sha256:1a48394b6f29d3a32c79d9edecd4abda0ecbe8776d567dbfc4590ed6979c740c",
+    "source": "https://mcr.microsoft.com/v2/dotnet/aspnet/manifests/10.0"
+  },
+  "resolved_at": "2026-11-08T07:21:59.306548+00:00",
+  "baseline_commit": "8b2e42672925163db98a4d2ee2de7eb2107018b3",
+  "scope": "K92N module only; other applications/workflows remain independent"
+}

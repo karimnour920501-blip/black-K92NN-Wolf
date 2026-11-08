@@ -1,11 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.100@sha256:c7445f141c04f1a6b454181bd098dcfa606c61ba0bd213d0a702489e5bd4cd71 AS build
 WORKDIR /src
-COPY global.json Directory.Build.props ./
+COPY global.json Directory.Build.props NuGet.Config ./
 COPY src/ src/
 RUN dotnet restore src/K92N.Host/K92N.Host.csproj --locked-mode
 RUN dotnet publish src/K92N.Host/K92N.Host.csproj -c Release --no-restore -o /out
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:1a48394b6f29d3a32c79d9edecd4abda0ecbe8776d567dbfc4590ed6979c740c
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends python3 util-linux bash passwd \
     && rm -rf /var/lib/apt/lists/* \
