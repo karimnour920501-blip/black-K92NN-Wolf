@@ -46,7 +46,7 @@ class RestoreSafety(unittest.TestCase):
 class SupplyPolicy(unittest.TestCase):
  def setUp(self):
   self.temp=tempfile.TemporaryDirectory();self.repo=Path(self.temp.name);self.root=self.repo/'apps/k92n'
-  for path in ['infra/supply-chain-lock.json','infra/Dockerfile.render','Directory.Build.props','NuGet.Config']:
+  for path in ['infra/supply-chain-lock.json','infra/Dockerfile.render','Directory.Build.props','NuGet.Config','package.json','package-lock.json','.npmrc']:
    dest=self.root/path;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes((ROOT/path).read_bytes())
   self.workflow=self.repo/'.github/workflows/k92n-hosting-verify.yml';self.workflow.parent.mkdir(parents=True);self.workflow.write_bytes((ROOT.parents[1]/'.github/workflows/k92n-hosting-verify.yml').read_bytes())
   self.old_root=supply.ROOT;self.old_repo=supply.REPO;supply.ROOT=self.root;supply.REPO=self.repo
@@ -74,3 +74,21 @@ class SupplyPolicy(unittest.TestCase):
  def test_vulnerable_package_not_green(self):
   with self.assertRaises(ValueError):self.audit({'version':1,'projects':[{'frameworks':[{'framework':'net10.0','transitivePackages':[{'id':'bad','vulnerabilities':[{'severity':'High'}]}]}]}]})
  def test_clean_audit_accepted(self):self.assertEqual(self.audit({'version':1,'projects':[{'frameworks':[{'framework':'net10.0'}]}]})['known_package_vulnerabilities_reported'],0)
+
+
+local=module('pilot_local_tests',ROOT/'tools/pilot_local.py')
+class LocalOperatorSecret(unittest.TestCase):
+ def test_generated_secret_is_private_and_reused(self):
+  import stat
+  with tempfile.TemporaryDirectory() as td:
+   p=Path(td)/'token';a=local.operator_secret(p);b=local.operator_secret(p)
+   self.assertGreaterEqual(len(a),32);self.assertEqual(a,b);self.assertEqual(stat.S_IMODE(p.stat().st_mode),0o600)
+ def test_shared_secret_file_rejected(self):
+  with tempfile.TemporaryDirectory() as td:
+   p=Path(td)/'token';p.write_text('x'*48);p.chmod(0o644)
+   with self.assertRaises(ValueError):local.operator_secret(p)
+ def test_symlink_secret_rejected_without_modifying_target(self):
+  with tempfile.TemporaryDirectory() as td:
+   target=Path(td)/'real';target.write_text('x'*48);target.chmod(0o600);link=Path(td)/'token';link.symlink_to(target)
+   with self.assertRaises(ValueError):local.operator_secret(link)
+   self.assertEqual(target.read_text(),'x'*48)
