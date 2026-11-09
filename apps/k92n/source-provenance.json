@@ -4,5 +4,6 @@
   "core_sha256": "109d5bf1e09e6fec94524ceb461dd59b384c3d1267b9b32141e98fa262595ace",
   "host_sha256": "f470a237f3172d28feea090eb5edd8c70a7838511dcc9756f6c69918099ee84f",
   "schema_sha256": "5791d4a1b7ea0347de19853f226f8e3df796724e9e3ad58c43d5a9c533ad3af1",
-  "scope": "Hosting configuration only; no cloud resource created; upstream evidence is historical, not proof of Docker/Render execution"
+  "scope": "Hashes identify the originally imported K92N 1.0.1 baseline, not current modified source. Hosting 1.0.2 adds pilot query/HTTP/UI/test adapters without schema/hash-contract migration. No cloud resource created.",
+  "historical_reference": true
 }

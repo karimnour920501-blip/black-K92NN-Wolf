@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths: ['apps/k92n/**', 'render.yaml', '.github/workflows/k92n-hosting-verify.yml']
   push:
-    branches: ['hosting/k92n-render-20261108', 'hardening/k92n-hosting-1.0.1']
+    branches: ['hosting/k92n-render-20261108', 'hardening/k92n-hosting-1.0.1', 'pilot/k92n-prepayment-1.0.2']
     paths: ['apps/k92n/**', 'render.yaml', '.github/workflows/k92n-hosting-verify.yml']
   workflow_dispatch:
 permissions:
@@ -47,6 +47,22 @@ jobs:
         run: python3 tools/test_hosting.py
       - name: Compiled host HTTP integration
         run: python3 tools/http_smoke.py
+      - name: Pilot HTTP contract checks
+        run: python3 tools/pilot_smoke.py
+      - name: Exact financial display tests
+        run: node --test tests/money.test.mjs tests/session.test.cjs
+      - name: Locked browser tooling and advisory audit
+        run: |
+          node --version
+          npm ci --ignore-scripts
+          npm audit --audit-level=low --json > evidence/npm-audit-ci.json
+          python3 tools/verify_supply_chain.py --npm-audit evidence/npm-audit-ci.json
+      - name: Install pinned browser builds
+        run: npx --no-install playwright install --with-deps chromium webkit
+      - name: Mobile browser pilot (Chromium and WebKit emulation)
+        env:
+          K92N_QA_SCREENSHOT: ${{ github.workspace }}/apps/k92n/evidence/qa-{engine}.png
+        run: node tests/browser/pilot.cjs
       - name: Recovery acceptance drill
         run: python3 tools/recovery_ci.py
       - name: Build actual Docker image
@@ -55,8 +71,14 @@ jobs:
         run: |
           docker image inspect k92n-render:test --format '{{.Id}}' > evidence/container-image-id.txt
           docker run --rm --entrypoint dpkg-query k92n-render:test -W > evidence/container-packages.tsv
+      - name: Validate local Compose configuration
+        env:
+          K92N_OPERATOR_TOKEN: ci-placeholder-for-config-validation-only-123456789
+        run: docker compose -f infra/compose.pilot.yaml config --quiet
       - name: Container persistence and HTTP checks
         run: python3 tools/docker_smoke.py
+      - name: Local Compose and preflight pilot
+        run: python3 tools/compose_smoke.py
       - name: Retain exact CI results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -72,5 +94,12 @@ jobs:
             apps/k92n/evidence/nuget-audit-gate.json
             apps/k92n/evidence/container-image-id.txt
             apps/k92n/evidence/container-packages.tsv
+            apps/k92n/evidence/pilot-http-results.json
+            apps/k92n/evidence/browser-pilot-results.json
+            apps/k92n/evidence/npm-audit-ci.json
+            apps/k92n/evidence/npm-audit-gate.json
+            apps/k92n/evidence/qa-*.png
+            apps/k92n/evidence/compose-pilot-results.json
+            apps/k92n/evidence/compose-preflight-results.json
           if-no-files-found: error
           retention-days: 14

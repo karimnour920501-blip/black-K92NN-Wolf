@@ -30,8 +30,8 @@ app.Use(async(context,next)=>{
  finally{app.Logger.LogInformation("HTTP {Method} {Path} {Status} {ElapsedMs}ms trace={Trace}",context.Request.Method,context.Request.Path,context.Response.StatusCode,sw.ElapsedMilliseconds,context.TraceIdentifier);}
 });
 app.UseDefaultFiles();app.UseStaticFiles();
-app.MapGet("/healthz",()=>Results.Ok(new{status="running",productionReady=false,version="1.0.1-local-verified"}));
-app.MapGet("/api/status",()=>new{version="1.0.1-local-verified",productionReady=false,source="visible conversation",accountingStore="SQLite local",financeP0="DESIGN_ONLY / PostgreSQL separate",oidc="NOT_IMPLEMENTED",creditLimit="DEFERRED",verification="See evidence/RESULTS.json from this exact source version"});
+app.MapGet("/healthz",()=>Results.Ok(new{status="running",productionReady=false,version="1.0.2-pilot-candidate"}));
+app.MapGet("/api/status",()=>new{version="1.0.2-pilot-candidate",productionReady=false,source="visible conversation",accountingStore="SQLite local",financeP0="DESIGN_ONLY / PostgreSQL separate",oidc="NOT_IMPLEMENTED",creditLimit="DEFERRED",verification="See GitHub CI evidence for the tested commit"});
 app.MapPost("/api/accounts",(AccountInput a,Store s)=>{s.CreateAccount(a.Id,a.Code,a.Name);return Results.Created($"/api/accounts/{a.Id}",new{id=a.Id});});
 app.MapPost("/api/journal_entries",(PostEntryRequest r,Store s)=>Results.Ok(new{id=s.PostEntry(r)}));
 app.MapPost("/api/journal_entries/{id:long}/reversal",(long id,ReverseInput r,Store s)=>Results.Ok(new{id=s.ReverseEntry(id,r.Date,r.Reason,r.IdempotencyKey)}));
@@ -41,6 +41,7 @@ app.MapGet("/api/customers/{id:long}/balances",(long id,long accountId,Store s)=
 app.MapPost("/api/events",(EventInput e,Store s)=>s.Record(e.Kind,e.EntityId,e.Payload));
 app.MapGet("/api/events",(Store s)=>s.ExportEvents());
 app.MapGet("/api/replay",(Store s)=>s.Replay());
+app.MapPilot();
 app.Run();
 public sealed record AccountInput(long Id,string Code,string Name);
 public sealed record ReverseInput(DateOnly Date,string Reason,string? IdempotencyKey=null);

@@ -17,7 +17,7 @@ public sealed record GovernanceEvent(long Seq,string At,string Kind,string Entit
 public sealed record ReplayReport(bool IsValid,long EventsChecked,string HeadHash,string? Problem,SortedDictionary<string,JsonElement> Projection);
 
 // New reconstruction; not a byte-for-byte recovery of Sovereign Core v2.
-public sealed class Store
+public sealed partial class Store
 {
  public const string Genesis="0000000000000000000000000000000000000000000000000000000000000000";
  public const long MaxMinor=1_000_000_000_000_000;

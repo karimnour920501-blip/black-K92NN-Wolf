@@ -1,0 +1,68 @@
+'use strict';
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),net=require('node:net'),crypto=require('node:crypto'),{spawn}=require('node:child_process');
+const {chromium,webkit,devices}=require('playwright');
+const ROOT=path.resolve(__dirname,'../..'),checks=[];let failure=null;
+function check(engine,name,value){checks.push({engine,name,status:value?'PASS':'FAIL'});if(!value)throw Error(engine+': '+name)}
+async function port(){return new Promise((resolve,reject)=>{const s=net.createServer();s.on('error',reject);s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p))})})}
+async function run(engine){
+ const td=fs.mkdtempSync(path.join(os.tmpdir(),'k92n-browser-')),token=crypto.randomBytes(40).toString('base64url'),address='http://127.0.0.1:'+await port();
+ const host=spawn(process.env.K92N_DOTNET||'dotnet',[path.join(ROOT,'src/K92N.Host/bin/Release/net10.0/K92N.Host.dll')],{cwd:path.join(ROOT,'src/K92N.Host'),env:{...process.env,K92N_OPERATOR_TOKEN:token,K92N_DATA_DIR:td,ASPNETCORE_URLS:address,ASPNETCORE_ENVIRONMENT:'Production'},stdio:['ignore','pipe','pipe']});let logs='';host.stdout.on('data',d=>logs+=d);host.stderr.on('data',d=>logs+=d);let browser,context;
+ try{
+  for(let i=0;i<150;i++){try{if((await fetch(address+'/healthz')).ok)break}catch{}if(host.exitCode!==null)throw Error('host exited');await new Promise(r=>setTimeout(r,100));if(i===149)throw Error('host readiness timeout')}
+  const launch={headless:true};if(engine==='chromium'&&process.env.K92N_CHROMIUM_PATH)launch.executablePath=process.env.K92N_CHROMIUM_PATH;
+  browser=await ({chromium,webkit}[engine]).launch(launch);context=await browser.newContext({...devices['iPhone 13'],viewport:{width:390,height:844},acceptDownloads:true});const page=await context.newPage();page.setDefaultTimeout(10000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const api=async route=>{const r=await fetch(address+'/api/'+route,{headers:{Authorization:'Bearer '+token}});if(!r.ok)throw Error('test API read failed');return r.json()};
+  const connect=async supplied=>{await page.locator('#token').fill(supplied);await page.locator('#connect').click()};
+  const confirmed=async()=>{await page.waitForFunction(()=>document.querySelector('#message').textContent.includes('تم الحفظ والتأكيد'));await page.waitForFunction(()=>!document.querySelector('.write-fields').disabled)};
+  const lookup=async()=>{await page.locator('#lookup').click();await page.waitForFunction(()=>document.querySelector('#statementScope').textContent.includes('العميل '+document.querySelector('#customer').value))};
+  await page.goto(address);check(engine,'workspace hidden before login',await page.locator('#workspace').isHidden());
+  await connect('x'.repeat(40));await page.waitForFunction(()=>document.querySelector('#message').textContent.includes('غير صحيح'));check(engine,'invalid credential leaves workspace hidden',await page.locator('#workspace').isHidden());
+  // A second connection supersedes a held first request; its session must survive.
+  let releaseConnect,enteredConnect,holdConnect=true;
+  const connectGate=new Promise(r=>releaseConnect=r),connectSeen=new Promise(r=>enteredConnect=r);
+  await page.route('**/api/status',async route=>{if(holdConnect){holdConnect=false;enteredConnect();await connectGate;}try{await route.continue()}catch{}});
+  await connect(token);await connectSeen;await connect(token);releaseConnect();
+  await page.locator('#workspace').waitFor({state:'visible'});
+  check(engine,'overlapping connection attempts preserve the latest session',await page.locator('#status').textContent().then(s=>s.includes('متصل')));
+  await page.unroute('**/api/status');
+  await connect(token);await page.locator('#workspace').waitFor({state:'visible'});check(engine,'operator credential field cleared',await page.locator('#token').inputValue()==='');
+  await page.getByText('إعداد الحسابات',{exact:true}).click();
+  for(const [id,name] of [['1','الصندوق'],['2','ذمم العملاء']]){await page.locator('#accountId').fill(id);await page.locator('#accountCode').fill(id);await page.locator('#accountName').fill(name);await page.locator('#createAccount').click();await confirmed();await page.waitForFunction(n=>document.querySelector('#accountsList').children.length===n,Number(id))}
+  check(engine,'accounts created through real UI',(await api('accounts')).length===2);
+  await page.locator('#control').selectOption('2');await page.locator('#counter').selectOption('1');await lookup();
+  await page.locator('#amount').fill('0');await page.locator('#description').fill('invalid zero');await page.locator('#post').click();await page.waitForFunction(()=>document.querySelector('#message').textContent.includes('موجب'));check(engine,'zero rejected before posting',(await api('integrity')).entriesChecked===0);
+  const description='<img src=x onerror="window.pilotInjected=true">';await page.locator('#amount').fill('125.50');await page.locator('#description').fill(description);await page.locator('#post').click();await confirmed();await page.waitForFunction(()=>document.querySelector('#balances').textContent.includes('125.50'));
+  check(engine,'exact debt visible on mobile',(await api('customers/7/statement?accountId=2')).balances.USD==='12550');check(engine,'description rendered as text without script execution',await page.evaluate(()=>!window.pilotInjected&&!document.querySelector('#statement img')));
+  await page.locator('[name=kind][value=PAYMENT]').check();await page.locator('#amount').fill('25.50');await page.locator('#description').fill('دفعة تجريبية');await page.locator('#post').click();await confirmed();await page.waitForFunction(()=>document.querySelector('#balances').textContent.includes('100.00'));
+  check(engine,'payment reduces balance exactly',(await api('customers/7/statement?accountId=2')).balances.USD==='10000');
+  await page.locator('[name=kind][value=DEBT]').check();await page.locator('#currency').selectOption('TRY');await page.locator('#amount').fill('100.00');await page.locator('#baseAmount').fill('3.25');await page.locator('#description').fill('دين بالليرة التركية');await page.locator('#post').click();await confirmed();await page.waitForFunction(()=>document.querySelector('#balances').children.length===2);
+  check(engine,'foreign and USD balances remain separate',JSON.stringify((await api('customers/7/statement?accountId=2')).balances)===JSON.stringify({TRY:'10000',USD:'10000'}));
+  await page.locator('#currency').selectOption('USD');await page.locator('#amount').fill('1.00');await page.locator('#description').fill('رد ضائع بعد الحفظ');let drop=true;const bodies=[];
+  await page.route('**/api/pilot/postings',async route=>{bodies.push(route.request().postDataJSON());if(drop){drop=false;await route.fetch();await route.abort('failed')}else await route.continue()});
+  await page.locator('#post').click();await page.locator('#pendingNotice').waitFor({state:'visible'});await page.waitForFunction(()=>!document.querySelector('#retry').disabled);
+  check(engine,'unknown result is marked and editing blocked',await page.locator('#amount').isDisabled());const count=(await api('integrity')).entriesChecked;check(engine,'dropped response happened after real commit',count===4);
+  await page.locator('#retry').click();await confirmed();await page.waitForFunction(()=>document.querySelector('#balances').textContent.includes('101.00'));
+  check(engine,'retry uses same body and idempotency key',bodies.length===2&&JSON.stringify(bodies[0])===JSON.stringify(bodies[1]));check(engine,'retry creates no duplicate entries',(await api('integrity')).entriesChecked===count);await page.unroute('**/api/pilot/postings');
+  await page.reload();check(engine,'reload does not retain operator session',await page.locator('#workspace').isHidden()&&await page.locator('#token').inputValue()==='');check(engine,'no secrets or ledger cached in browser storage',await page.evaluate(()=>localStorage.length===0&&sessionStorage.length===0));
+  await connect(token);await page.locator('#workspace').waitFor({state:'visible'});await page.locator('#control').selectOption('2');await page.locator('#counter').selectOption('1');await lookup();await page.waitForFunction(()=>document.querySelector('#balances').textContent.includes('101.00'));check(engine,'reopening retrieves persisted ledger from server',(await api('integrity')).entriesChecked===4);
+  const rows=(await api('customers/7/statement?accountId=2')).lines;const first=rows.find(r=>r.debitMinor==='12550').entryId;
+  await page.locator('#reverseId').fill(first);await page.locator('#reason').fill('تصحيح القيد الأصلي');await page.locator('#confirmReverse').check();await page.locator('#reverse').click();await confirmed();await page.waitForFunction(()=>document.querySelector('#balances').textContent.includes('-24.50'));
+  check(engine,'reversal honestly shows resulting credit balance',(await api('customers/7/statement?accountId=2')).balances.USD==='-2450');check(engine,'original entry retained and marked reversed',(await api('customers/7/statement?accountId=2')).lines.some(r=>r.entryId===first&&r.isReversed));
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#exportStatement').click()]);const csv=fs.readFileSync(await download.path(),'utf8');check(engine,'CSV contains loaded statement in exact minor units',csv.includes('debit_minor')&&csv.includes('12550')&&csv.includes('دفعة تجريبية'));
+  await page.locator('#customer').fill('999');await lookup();check(engine,'different customer never sees prior customer rows',await page.locator('#statement .movement').count()===0&&!await page.locator('#balances').textContent().then(s=>s.includes('101.00')));
+  // Hold a real read response until after logout. It must not repopulate hidden data.
+  let release,entered;const gate=new Promise(r=>release=r),seen=new Promise(r=>entered=r);
+  await page.route('**/api/customers/7/statement?**',async route=>{const response=await route.fetch();entered();await gate;try{await route.fulfill({response})}catch{}});
+  await page.locator('#customer').fill('7');await page.locator('#lookup').click();await seen;await page.locator('#disconnect').click();release();await page.waitForTimeout(200);
+  check(engine,'late response cannot repopulate after logout',await page.locator('#workspace').isHidden()&&await page.locator('#statement').textContent()==='');await page.unroute('**/api/customers/7/statement?**');
+  await connect(token);await page.locator('#workspace').waitFor({state:'visible'});await page.locator('#control').selectOption('2');await lookup();await page.locator('#checkIntegrity').click();await page.waitForFunction(()=>document.querySelector('#integrityResult').textContent.includes('متسق داخليًا'));
+  check(engine,'integrity can be checked through UI',(await api('integrity')).isValid);
+  const overflow=await page.evaluate(()=>({width:window.innerWidth,scroll:document.documentElement.scrollWidth,elements:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>window.innerWidth+1||e.getBoundingClientRect().left < -1).map(e=>({tag:e.tagName,id:e.id,width:Math.round(e.getBoundingClientRect().width)})).slice(0,12)}));if(overflow.scroll>overflow.width)throw Error(engine+': viewport overflow '+JSON.stringify(overflow));check(engine,'mobile viewport has no horizontal overflow',true);check(engine,'touch target is at least 44px',(await page.locator('#post').boundingBox()).height>=44);
+  check(engine,'no unhandled browser JavaScript errors',errors.length===0);
+  // Internal visual QA only; no user data and no authentication field contents.
+  if(process.env.K92N_QA_SCREENSHOT){await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:process.env.K92N_QA_SCREENSHOT.replace('{engine}',engine),fullPage:true})}
+ }finally{
+  if(context)await context.close();if(browser)await browser.close();host.kill('SIGTERM');await Promise.race([new Promise(r=>host.once('exit',r)),new Promise(r=>setTimeout(()=>{host.kill('SIGKILL');r()},5000))]);fs.rmSync(td,{recursive:true,force:true});if(logs.includes(token))throw Error('secret found in host log');
+ }
+}
+(async()=>{const engines=(process.env.K92N_BROWSERS||'chromium,webkit').split(',');try{for(const e of engines)await run(e)}catch(e){failure=e.message}const report={at:new Date().toISOString(),commit:process.env.GITHUB_SHA||null,scope:'real browser + compiled host; mobile emulation, NOT physical iPhone Safari',engines,checks,failure,physicalIPhone:'NOT_RUN',productionReady:false};fs.writeFileSync(path.join(ROOT,'evidence/browser-pilot-results.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({checks:checks.length,passed:checks.filter(c=>c.status==='PASS').length,failure}));process.exitCode=failure?1:0})().catch(e=>{console.error(e.message);process.exitCode=1});

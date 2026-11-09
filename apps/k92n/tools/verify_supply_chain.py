@@ -17,7 +17,16 @@ def verify_pins():
  if props.findtext('.//RestoreLockedMode')!='true':raise ValueError('Locked NuGet restore must be enabled')
  config=ET.parse(ROOT/'NuGet.Config');sources=config.findall('./packageSources/add')
  if len(sources)!=1 or sources[0].get('value')!='https://api.nuget.org/v3/index.json' or config.find('./packageSources/clear') is None:raise ValueError('NuGet sources must be explicitly scoped to nuget.org')
- return {'images':images,'actions':actions,'lock_sha256':hashlib.sha256((ROOT/'infra/supply-chain-lock.json').read_bytes()).hexdigest()}
+ manifest=json.loads((ROOT/'package.json').read_text());lock=json.loads((ROOT/'package-lock.json').read_text())
+ deps=manifest.get('devDependencies',{})
+ if set(deps)!={'playwright'} or not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+',deps['playwright']):raise ValueError('Browser test dependency must use an exact version')
+ if lock.get('lockfileVersion')!=3 or lock['packages'][''].get('devDependencies')!=deps:raise ValueError('npm lock differs from manifest')
+ for name,item in lock['packages'].items():
+  if not name:continue
+  integrity=item.get('integrity','')
+  if not item.get('resolved','').startswith('https://registry.npmjs.org/') or not integrity.startswith('sha512-') or len(base64.b64decode(integrity[7:],validate=True))!=64:raise ValueError('npm package lacks trusted registry URL or SHA-512 integrity')
+ if 'ignore-scripts=true' not in (ROOT/'.npmrc').read_text():raise ValueError('npm lifecycle scripts must be disabled')
+ return {'images':images,'actions':actions,'npm_test_dependencies':deps,'lock_sha256':hashlib.sha256((ROOT/'infra/supply-chain-lock.json').read_bytes()).hexdigest()}
 
 def locked_packages():
  result={}
@@ -65,14 +74,22 @@ def verify_audit(path):
  if count:raise ValueError('NuGet reports '+str(count)+' known package vulnerabilities')
  return {'known_package_vulnerabilities_reported':count,'scope':'NuGet restored graph only; not an OS/runtime or full security audit'}
 
+def verify_npm_audit(path):
+ audit=json.loads(path.read_text())
+ if audit.get('error') or not audit.get('metadata',{}).get('vulnerabilities'):raise ValueError('npm advisory data unavailable')
+ counts=audit['metadata']['vulnerabilities']
+ if any(counts.get(k,0) for k in ['info','low','moderate','high','critical','total']):raise ValueError('npm reports known vulnerabilities')
+ return {'known_test_dependency_vulnerabilities_reported':0,'scope':'npm browser-test dependencies only'}
+
 def main():
- p=argparse.ArgumentParser();p.add_argument('--packages',type=Path);p.add_argument('--dotnet',default='dotnet');p.add_argument('--audit',type=Path);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--packages',type=Path);p.add_argument('--dotnet',default='dotnet');p.add_argument('--audit',type=Path);p.add_argument('--npm-audit',type=Path);a=p.parse_args()
  report={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'commit':os.environ.get('GITHUB_SHA'),'production_ready':False}
- name='nuget-audit-gate.json' if a.audit else 'dependency-integrity-results.json' if a.packages else 'supply-chain-results.json'
+ name='npm-audit-gate.json' if a.npm_audit else 'nuget-audit-gate.json' if a.audit else 'dependency-integrity-results.json' if a.packages else 'supply-chain-results.json'
  try:
   report['pins']=verify_pins()
   if a.packages:report['packages']=verify_packages(a.packages,a.dotnet)
   if a.audit:report['audit']=verify_audit(a.audit)
+  if a.npm_audit:report['npm_audit']=verify_npm_audit(a.npm_audit)
   report['status']='PASS'
  except Exception as e:report['status']='FAIL';report['error']=type(e).__name__+': '+str(e)
  (ROOT/'evidence').mkdir(exist_ok=True);(ROOT/'evidence'/name).write_text(json.dumps(report,indent=2)+'\n')

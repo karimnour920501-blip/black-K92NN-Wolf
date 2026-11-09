@@ -1,0 +1,1 @@
+{"name":"blackwolf-k92n-pilot-tests","version":"1.0.2","private":true,"description":"Browser tests only; frontend has no runtime npm dependencies","devDependencies":{"playwright":"1.62.1"},"scripts":{"test:money":"node --test tests/money.test.mjs","test:browser":"node tests/browser/pilot.cjs"},"engines":{"node":">=22"}}
