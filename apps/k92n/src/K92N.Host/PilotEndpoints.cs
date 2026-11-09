@@ -9,9 +9,13 @@ public static partial class PilotEndpoints
 {
  [GeneratedRegex(@"^[0-9]+(?:\.[0-9]+)?$",RegexOptions.CultureInvariant)]
  private static partial Regex AmountPattern();
- private static decimal Amount(string? value)
+ private static decimal Amount(string? value,int digits)
  {
-  if(value is null||value.Length>32||!AmountPattern().IsMatch(value)||!decimal.TryParse(value,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var number)||number<=0)throw new LedgerException("INVALID_REQUEST","Positive decimal amount required");
+  if(value is null||value.Length>32||!AmountPattern().IsMatch(value))throw new LedgerException("INVALID_REQUEST","Positive decimal amount required");
+  // Validate the original string before Decimal.TryParse can round beyond its precision.
+  var point=value.IndexOf('.');
+  if(point>=0&&value.Length-point-1>digits)throw new LedgerException("PRECISION_VIOLATION","No silent rounding");
+  if(!decimal.TryParse(value,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var number)||number<=0)throw new LedgerException("INVALID_REQUEST","Positive decimal amount required");
   return number;
  }
  private static long Id(string? value)
@@ -29,7 +33,8 @@ public static partial class PilotEndpoints
   app.MapPost("/api/pilot/postings",(PilotPostingInput input,Store s)=>{
    var customer=Id(input.CustomerId);var control=Id(input.ControlAccountId);var counter=Id(input.CounterAccountId);
    if(control==counter||input.Kind is not ("DEBT" or "PAYMENT")||string.IsNullOrWhiteSpace(input.IdempotencyKey))throw new LedgerException("INVALID_REQUEST","Invalid posting");
-   var orig=Amount(input.Amount);var basis=input.CurrencyCode=="USD"?orig:Amount(input.BaseAmount);
+   var currency=s.Currencies().FirstOrDefault(c=>c.Code==input.CurrencyCode)??throw new LedgerException("UNKNOWN_CURRENCY","Unknown currency");
+   var orig=Amount(input.Amount,currency.MinorUnits);var basis=currency.IsBase?orig:Amount(input.BaseAmount,2);
    // Decimal strings are parsed server-side. JavaScript never rounds a financial amount.
    var debt=input.Kind=="DEBT";
    var lines=new[]{new JournalLineDto(control,input.CurrencyCode,debt?orig:0,debt?0:orig,debt?basis:0,debt?0:basis,customer),new JournalLineDto(counter,input.CurrencyCode,debt?0:orig,debt?orig:0,debt?0:basis,debt?basis:0)};

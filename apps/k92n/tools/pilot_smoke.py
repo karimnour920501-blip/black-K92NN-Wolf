@@ -33,6 +33,19 @@ def main():
    stmt=h.get('/api/customers/7/statement?accountId=2');check('currencies stay separate with exact integer strings',stmt['balances']=={'TRY':'10000','USD':'10000'} and stmt['lines'][0]['debitBaseMinor']=='325')
    for name,updates in [('precision',{'amount':'1.001'}),('negative',{'amount':'-1'}),('exponent',{'amount':'1e2'}),('zero',{'amount':'0'}),('invalid control',{'controlAccountId':'0'}),('identical accounts',{'counterAccountId':'2'}),('unknown currency',{'currencyCode':'ZZZ'}),('unknown account',{'counterAccountId':'999'}),('missing idempotency key',{'idempotencyKey':''}),('bad date',{'entryDate':'2026-13-45'})]:
     bad=copy.deepcopy(req);bad.update(idempotencyKey='bad-'+name);bad.update(updates);check('reject '+name,h.request('/api/pilot/postings',bad)[0] in [400,422])
+   # Reject precision in the original HTTP string before System.Decimal can round it.
+   for name,updates in [
+    ('rounded USD fraction',{'amount':'1.00000000000000000000000000001'}),
+    ('rounded foreign fraction',{'currencyCode':'TRY','amount':'1.00000000000000000000000000001','baseAmount':'1.00'}),
+    ('rounded base fraction',{'currencyCode':'TRY','amount':'1.00','baseAmount':'1.00000000000000000000000000001'}),
+    ('zero-digit currency fraction',{'currencyCode':'SYP','amount':'1.1','baseAmount':'1.00'}),
+    ('rounded near maximum',{'amount':'9999999999999.99999999999999999'}),
+   ]:
+    before=h.get('/api/integrity');statement=h.get('/api/customers/7/statement?accountId=2')
+    bad=copy.deepcopy(req);bad.update(updates,idempotencyKey='precision-'+name)
+    check('reject '+name,h.request('/api/pilot/postings',bad)[0]==422)
+    after=h.get('/api/integrity')
+    check('no write for '+name,after['entriesChecked']==before['entriesChecked'] and after['headHash']==before['headHash'] and h.get('/api/customers/7/statement?accountId=2')==statement)
    check('failed postings leave ledger unchanged',h.get('/api/integrity')['entriesChecked']==3)
    check('page bound enforced',h.request('/api/customers/7/statement?accountId=2&limit=101')[0]==422)
    check('partial cursor rejected',h.request('/api/customers/7/statement?accountId=2&beforeEntryId=1')[0]==422)
