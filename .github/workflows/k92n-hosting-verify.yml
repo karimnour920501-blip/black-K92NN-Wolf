@@ -50,7 +50,7 @@ jobs:
       - name: Pilot HTTP contract checks
         run: python3 tools/pilot_smoke.py
       - name: Exact financial display tests
-        run: node --test tests/money.test.mjs
+        run: node --test tests/money.test.mjs tests/session.test.cjs
       - name: Locked browser tooling and advisory audit
         run: |
           node --version

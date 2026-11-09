@@ -17,6 +17,14 @@ async function run(engine){
   const lookup=async()=>{await page.locator('#lookup').click();await page.waitForFunction(()=>document.querySelector('#statementScope').textContent.includes('العميل '+document.querySelector('#customer').value))};
   await page.goto(address);check(engine,'workspace hidden before login',await page.locator('#workspace').isHidden());
   await connect('x'.repeat(40));await page.waitForFunction(()=>document.querySelector('#message').textContent.includes('غير صحيح'));check(engine,'invalid credential leaves workspace hidden',await page.locator('#workspace').isHidden());
+  // A second connection supersedes a held first request; its session must survive.
+  let releaseConnect,enteredConnect,holdConnect=true;
+  const connectGate=new Promise(r=>releaseConnect=r),connectSeen=new Promise(r=>enteredConnect=r);
+  await page.route('**/api/status',async route=>{if(holdConnect){holdConnect=false;enteredConnect();await connectGate;}try{await route.continue()}catch{}});
+  await connect(token);await connectSeen;await connect(token);releaseConnect();
+  await page.locator('#workspace').waitFor({state:'visible'});
+  check(engine,'overlapping connection attempts preserve the latest session',await page.locator('#status').textContent().then(s=>s.includes('متصل')));
+  await page.unroute('**/api/status');
   await connect(token);await page.locator('#workspace').waitFor({state:'visible'});check(engine,'operator credential field cleared',await page.locator('#token').inputValue()==='');
   await page.getByText('إعداد الحسابات',{exact:true}).click();
   for(const [id,name] of [['1','الصندوق'],['2','ذمم العملاء']]){await page.locator('#accountId').fill(id);await page.locator('#accountCode').fill(id);await page.locator('#accountName').fill(name);await page.locator('#createAccount').click();await confirmed();await page.waitForFunction(n=>document.querySelector('#accountsList').children.length===n,Number(id))}
