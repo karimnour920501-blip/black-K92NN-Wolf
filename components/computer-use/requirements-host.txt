@@ -1,0 +1,2 @@
+# For the live host Responses client; install under Python 3.11+.
+openai==3.31.0
