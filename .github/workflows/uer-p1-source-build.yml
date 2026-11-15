@@ -2,6 +2,7 @@ name: UER P1 source build and SQLite contracts (NOT release approval)
 
 on:
   workflow_dispatch:
+  push:
   pull_request:
     branches: [main]
   push:
@@ -63,21 +64,11 @@ jobs:
           path: gates.json
           if-no-files-found: error
           retention-days: 90
-      - name: Report production gate state (not a CI failure)
+      - name: Explicit release block
         if: always()
         run: |
-          echo "UER source CI does not grant production approval."
-          node <<'NODE'
-          const fs = require('node:fs');
-          const state = JSON.parse(fs.readFileSync('gates.json', 'utf8'));
-          const productionApproved = state.verified === true &&
-            state.production_ready === true &&
-            Object.values(state.gates || {}).length > 0 &&
-            Object.values(state.gates).every(g =>
-              g && g.state === 'verified' &&
-              typeof g.evidence === 'string' && g.evidence.trim());
-          console.log('production_ready=' + Boolean(productionApproved));
-          NODE
+          echo "UER build and SQLite contracts do NOT verify Docker acceptance tests"
+          echo "production_ready=false"
       - name: Fail run when a required stage fails or is skipped
         if: always()
         env:
