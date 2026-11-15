@@ -1,0 +1,58 @@
+name: unified-v2-1-ci
+on:
+  push:
+    branches: [development/unified-platform-v2-1]
+  pull_request:
+jobs:
+  build-and-db:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: wolf_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d wolf_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ci-only-password
+      PGDATABASE: wolf_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore and compile
+        run: |
+          dotnet restore src/Wolf.Commands.Api/Wolf.Commands.Api.csproj
+          dotnet build src/Wolf.Commands.Api/Wolf.Commands.Api.csproj --no-restore --configuration Release
+      - name: Static source contracts
+        run: |
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
+          python3 verify_source.py
+      - name: Apply migrations and role grants
+        run: |
+          psql -v ON_ERROR_STOP=1 -f db/001_init.sql
+          psql -v ON_ERROR_STOP=1 -f db/002_workspaces.sql
+          psql -v ON_ERROR_STOP=1 -f db/000_roles_example.sql
+      - name: RLS database integration test
+        run: psql -v ON_ERROR_STOP=1 -f tests/rls_integration.sql
+
+      - name: Live API JWT RBAC and tenant isolation
+        env:
+          JWT_ISSUER: wolf-ci
+          JWT_AUDIENCE: wolf-ci-api
+          JWT_SIGNING_KEY: ci-test-only-key-please-never-use-in-production-123456789
+          DATABASE_URL: Host=localhost;Port=5432;Database=wolf_ci;Username=wolf_app;Password=ci-test-password
+        run: |
+          psql -v ON_ERROR_STOP=1 -c "ALTER ROLE wolf_app WITH LOGIN PASSWORD 'ci-test-password' NOSUPERUSER NOBYPASSRLS;"
+          dotnet run --project src/Wolf.Commands.Api/Wolf.Commands.Api.csproj --no-build --configuration Release --no-launch-profile --urls http://127.0.0.1:5187 > /tmp/wolf-api.log 2>&1 &
+          api_pid=$!
+          trap 'cat /tmp/wolf-api.log; kill "$api_pid" 2>/dev/null || true' EXIT
+          python3 tests/http_security_integration.py
