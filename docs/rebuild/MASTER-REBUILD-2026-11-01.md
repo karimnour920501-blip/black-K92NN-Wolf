@@ -19,11 +19,11 @@ This work reconstructs the **current conversation's** GitHub / OpenAI / Mobile S
 
 ### Partial copy into this reconstruction branch
 
-This branch starts from Mobile S6 and imports the current `main` Python OpenAI gateway, backend tests, smoke script, and workflow. The original `apps/blackwolf-ai/index.html` **was not imported**: the GitHub connector blocked its copy during reconstruction. The authoritative web UI remains available on `main` at its existing path. **Do not claim this branch is a complete runnable unified web/mobile build until that file is restored through an authorized review workflow and all tests run.** It is a preparation branch, not an approved merger. Other imported paths retain their source blob hashes for comparison.
+The 2026-11-01 reconstruction started from Mobile S6 and imported the Python gateway, backend tests, smoke script, and workflow. At that time the connector blocked copying `apps/blackwolf-ai/index.html`. A 2026-11-25 restoration candidate adds the exact canonical UI blob from commit `9ab3ad4ed2f6c94bb814947ed9ac1eb4e4bd8050` and checks its Git blob hash. This candidate remains review-only: its existence and offline tests do not verify the mobile application, live provider access, deployment, or production readiness.
 
 ### Repository map
 
-- `apps/blackwolf-ai` — Python standard-library local-only HTTP server, static web UI **on main**, Responses API adapter, offline mocks and manual provider smoke check.
+- `apps/blackwolf-ai` — Python standard-library local-only HTTP server, restored canonical static web UI, Responses API adapter, offline mocks and manual provider smoke check.
 - `BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1` — Expo SDK 54/React Native/TypeScript five-tab demo shell (S1 scope), source-only lint; not authenticated.
 - `mobile/s6` — E2E-01..08 matrix, 26 pending release evidence gates, audit triage and release status.
 - `.github/workflows` — independent offline CI, manual-only live OpenAI test, S1/S6 CI and guarded manual EAS builds.

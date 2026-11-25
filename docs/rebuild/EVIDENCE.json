@@ -132,8 +132,10 @@
   },
   "web_ui": {
     "canonical_main_path": "apps/blackwolf-ai/index.html",
-    "copied_to_rebuild_branch": false,
-    "reason": "GitHub connector security checks blocked copying this existing HTML; original is unchanged in main."
+    "copied_to_rebuild_branch": true,
+    "source_commit": "9ab3ad4ed2f6c94bb814947ed9ac1eb4e4bd8050",
+    "source_git_blob_sha1": "5b2dbf4024a4c23cd944603ca763c0313cabd4b2",
+    "restoration_note": "Canonical bytes restored in this candidate; offline checks do not establish live provider or production readiness."
   },
   "unresolved": [
     "OpenAI API key authentication 401",
