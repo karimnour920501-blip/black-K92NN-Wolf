@@ -4,7 +4,7 @@
 
 | الوحدة | المصدر | التشغيل والتحقق |
 | --- | --- | --- |
-| K92N ledger | [apps/k92n](apps/k92n) | [دليل التشغيل](apps/k92n/README-AR.md) و[تجربة المشغّل](apps/k92n/docs/PREPAYMENT-PILOT-1.0.2-AR.md) بعد دمج PR #39 |
+| K92N ledger | [apps/k92n](apps/k92n) | [دليل التشغيل](apps/k92n/README-AR.md) و[تجربة المشغّل](apps/k92n/docs/PREPAYMENT-PILOT-1.0.2-AR.md)؛ أُدرج في `main` عبر PR #39 |
 | BLACKWOLF AI preview | [apps/blackwolf-ai](apps/blackwolf-ai) | [الدليل والحدود](apps/blackwolf-ai/README.md)؛ فحوص offline منفصلة عن اتصال OpenAI المدفوع |
 | Control plane المستعاد | [components/control-plane](components/control-plane) | `cd components/control-plane && python3 -m unittest discover -s tests -v` |
 | Runtime المستعاد | [components/runtime](components/runtime) | [الدليل](components/runtime/README.md)؛ وحدات مستعادة مع حفظ بصمات الأصل |
