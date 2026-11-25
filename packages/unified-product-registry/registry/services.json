@@ -1,0 +1,13 @@
+{
+  "services_version": "1.0.1",
+  "services": [
+    {
+      "service_id": "BW-006",
+      "name": "Systems Architecture & Security Consulting",
+      "category": "professional_services",
+      "booking_enabled": false,
+      "deliverable_type": "engagement_contract",
+      "evidence_manifest_path": null
+    }
+  ]
+}

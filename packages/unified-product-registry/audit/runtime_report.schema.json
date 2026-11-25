@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_id",
+    "asset_version",
+    "artifact_sha256",
+    "environment",
+    "tests_total",
+    "tests_passed",
+    "status"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "pattern": "^BW-[0-9]{3}$"
+    },
+    "asset_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "environment": {
+      "type": "string",
+      "minLength": 2
+    },
+    "tests_total": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tests_passed": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "PASSED",
+        "FAILED"
+      ]
+    }
+  }
+}

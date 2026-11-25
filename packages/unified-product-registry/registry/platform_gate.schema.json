@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gate_version",
+    "platform_version",
+    "environment",
+    "deployment_digest",
+    "platform_production_verified",
+    "payment_provider_verified",
+    "entitlement_pipeline_verified",
+    "delivery_pipeline_verified",
+    "mock_data_removed_verified",
+    "attestation_report_path",
+    "attestation_key_id",
+    "attestation_signature_b64"
+  ],
+  "properties": {
+    "gate_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "platform_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deployment_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "platform_production_verified": {
+      "type": "boolean"
+    },
+    "payment_provider_verified": {
+      "type": "boolean"
+    },
+    "entitlement_pipeline_verified": {
+      "type": "boolean"
+    },
+    "delivery_pipeline_verified": {
+      "type": "boolean"
+    },
+    "mock_data_removed_verified": {
+      "type": "boolean"
+    },
+    "attestation_report_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "attestation_key_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "attestation_signature_b64": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
