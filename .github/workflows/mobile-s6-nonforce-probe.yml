@@ -1,0 +1,59 @@
+name: Mobile S6 non-force dependency remediation probe
+on:
+  push:
+    branches: [audit/mobile-s6-nonforce-20261125]
+    paths: ['.github/workflows/mobile-s6-nonforce-probe.yml', 'BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json']
+  pull_request:
+    branches: [development/mobile-mvp-s6-evidence-gate-20261101]
+    paths: ['.github/workflows/mobile-s6-nonforce-probe.yml', 'BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1/package-lock.json']
+permissions:
+  contents: read
+jobs:
+  nonforce-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: BLACK-K92N-WOLF-Mobile-MVP-v1.0-S1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install original lockfile without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Measure and generate non-force candidate in runner only
+        run: |
+          mkdir -p ../mobile-remediation-evidence
+          npm audit --omit=dev --json > ../mobile-remediation-evidence/before.json || true
+          set +e
+          npm audit fix --package-lock-only --ignore-scripts --no-fund > ../mobile-remediation-evidence/fix.log 2>&1
+          fix_exit=$?
+          set -e
+          echo "$fix_exit" > ../mobile-remediation-evidence/fix-exit.txt
+          git diff -- package.json package-lock.json > ../mobile-remediation-evidence/lock.diff
+          git diff --exit-code -- package.json
+          cp package-lock.json ../mobile-remediation-evidence/candidate-lock.json
+      - name: Install candidate lockfile without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Save candidate audit
+        run: npm audit --omit=dev --json > ../mobile-remediation-evidence/after.json || true
+      - name: Source tests and compatibility checks
+        run: |
+          npm test
+          npm run typecheck
+          npm run lint
+          npx expo export --platform all --output-dir dist
+      - name: Require zero high and critical findings
+        run: |
+          node -e "const a=require('../mobile-remediation-evidence/after.json'); const v=a.metadata?.vulnerabilities; if(!v || v.high || v.critical) process.exit(1)"
+      - name: Upload candidate and audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-s6-nonforce-${{ github.run_id }}-${{ github.run_attempt }}
+          path: mobile-remediation-evidence/
+          if-no-files-found: error
+          retention-days: 14
