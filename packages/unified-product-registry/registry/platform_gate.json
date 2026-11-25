@@ -1,0 +1,14 @@
+{
+  "gate_version": "1.0.1",
+  "platform_version": "1.0.1",
+  "environment": "hetzner-ubuntu-24.04",
+  "deployment_digest": null,
+  "platform_production_verified": false,
+  "payment_provider_verified": false,
+  "entitlement_pipeline_verified": false,
+  "delivery_pipeline_verified": false,
+  "mock_data_removed_verified": false,
+  "attestation_report_path": null,
+  "attestation_key_id": null,
+  "attestation_signature_b64": null
+}

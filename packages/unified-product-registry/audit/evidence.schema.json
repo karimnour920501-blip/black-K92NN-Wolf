@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "asset_id",
+    "asset_version",
+    "verified_at",
+    "release_gate_approved",
+    "verification"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": "string",
+      "pattern": "^BW-[0-9]{3}$"
+    },
+    "asset_version": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string"
+    },
+    "release_gate_approved": {
+      "type": "boolean"
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "artifact",
+        "signature",
+        "runtime",
+        "commercial"
+      ],
+      "properties": {
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repository",
+            "commit_sha",
+            "status"
+          ],
+          "properties": {
+            "repository": {
+              "type": "string"
+            },
+            "commit_sha": {
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "VERIFIED",
+                "NOT_VERIFIED"
+              ]
+            }
+          }
+        },
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "expected_sha256",
+            "status"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "expected_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "status": {
+              "enum": [
+                "VERIFIED",
+                "NOT_VERIFIED"
+              ]
+            }
+          }
+        },
+        "signature": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "algorithm",
+            "trusted_key_id",
+            "signature_b64"
+          ],
+          "properties": {
+            "algorithm": {
+              "enum": [
+                "Ed25519"
+              ]
+            },
+            "trusted_key_id": {
+              "type": "string"
+            },
+            "signature_b64": {
+              "type": "string"
+            }
+          }
+        },
+        "runtime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "report_path",
+            "test_report_sha256",
+            "status"
+          ],
+          "properties": {
+            "report_path": {
+              "type": "string"
+            },
+            "test_report_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "status": {
+              "enum": [
+                "PASSED",
+                "FAILED",
+                "NOT_RUN"
+              ]
+            }
+          }
+        },
+        "commercial": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "license_approved",
+            "documentation_verified",
+            "release_approved"
+          ],
+          "properties": {
+            "license_approved": {
+              "type": "boolean"
+            },
+            "documentation_verified": {
+              "type": "boolean"
+            },
+            "release_approved": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_version",
+    "mock_data_isolated",
+    "products"
+  ],
+  "properties": {
+    "registry_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "mock_data_isolated": {
+      "const": true
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id",
+          "name",
+          "category",
+          "version",
+          "release_gate",
+          "commercial_sale_enabled",
+          "pricing_tier",
+          "overlap_target",
+          "dependencies",
+          "evidence_manifest_path"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "pattern": "^BW-[0-9]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2
+          },
+          "category": {
+            "type": "string",
+            "minLength": 2
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "release_gate": {
+            "enum": [
+              "G0",
+              "G1",
+              "G2",
+              "G3"
+            ]
+          },
+          "commercial_sale_enabled": {
+            "type": "boolean"
+          },
+          "pricing_tier": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNDECIDED"
+            ]
+          },
+          "overlap_target": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^BW-[0-9]{3}$"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^BW-[0-9]{3}$"
+            },
+            "uniqueItems": true
+          },
+          "evidence_manifest_path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "if": {
+          "properties": {
+            "commercial_sale_enabled": {
+              "const": true
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "release_gate": {
+              "const": "G3"
+            },
+            "pricing_tier": {
+              "enum": [
+                "FREE",
+                "PAID"
+              ]
+            }
+          }
+        }
+      },
+      "minItems": 1
+    }
+  }
+}

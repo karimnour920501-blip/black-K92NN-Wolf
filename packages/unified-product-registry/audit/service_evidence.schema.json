@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "service_id",
+    "scope_document_sha256",
+    "sla_document_sha256",
+    "scope_approved",
+    "sla_approved",
+    "trusted_key_id",
+    "signature_b64"
+  ],
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "pattern": "^BW-[0-9]{3}$"
+    },
+    "scope_document_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sla_document_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "scope_approved": {
+      "type": "boolean"
+    },
+    "sla_approved": {
+      "type": "boolean"
+    },
+    "trusted_key_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "signature_b64": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

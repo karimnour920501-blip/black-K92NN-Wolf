@@ -1,0 +1,2 @@
+# BLACKWOLF Unified Product Registry v1.0.1
+Reconstructed implementation from conversation, not a byte-identical copy. Local fixture tests only. Production and commercial release blocked. No original product packages or production trust keys. Branch protection template not applied. Dependency hashes not locked. Runtime reports are publisher-bound, not independently attested. Paid entitlement gate remains as supplied. Do not use for production.

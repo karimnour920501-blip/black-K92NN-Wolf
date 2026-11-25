@@ -1,0 +1,8 @@
+{
+  "lineage": "RECONSTRUCTED_FROM_CONVERSATION",
+  "scope": "registry fixture tests only",
+  "original_assets_verified": 0,
+  "production_ready": false,
+  "branch_protection_applied": false,
+  "dependency_hash_lock": false
+}
