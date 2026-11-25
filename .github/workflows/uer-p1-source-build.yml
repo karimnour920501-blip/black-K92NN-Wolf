@@ -20,12 +20,14 @@ jobs:
     steps:
       - name: Restore repository source
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 snapshot 2026-11-09
+        with:
+          persist-credentials: false
         continue-on-error: true
       - name: Set up .NET
         id: dotnet
         if: steps.checkout.outcome == 'success'
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4 snapshot 2026-11-09
         with:
           dotnet-version: '8.0.x'
       - name: Restore UER source
@@ -57,7 +59,7 @@ jobs:
         run: node scripts/emit-gates.js
       - name: Upload gate state
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 snapshot 2026-11-09
         with:
           name: gates-${{ github.run_id }}
           path: gates.json
