@@ -2,7 +2,15 @@
 
 Status: **OPEN — release blocked**. This document records observed automated audit findings and target mitigations; it does NOT certify exploitability or a clean dependency tree.
 
-## Observed
+## 2026-11-25 rerun and non-force probe
+
+- [S6 CI rerun, attempt 3](https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41260478561): production dependency audit reported **5 high, 13 moderate, 0 low, 0 critical** and failed. Artifact ID `15020445924`, SHA-256 `63cf7553fc133a69193123acca4a3ba08fa7d9bb5713e806c26e24d1452c94bb`.
+- Current high-severity package entries: `decode-uri-component`, `expo-router`, `image-size`, `postcss`, and `query-string`. Counts are npm audit metadata, not a count of independently confirmed exploits.
+- [Non-force isolated probe](https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/45612782812) used `npm audit fix --package-lock-only --ignore-scripts`, without `--force`. Candidate source tests, typecheck, limited lint and Metro export passed, but the audit still had **5 high and 12 moderate**; the security gate failed.
+- The candidate lockfile changed about 9,953 diff lines and remains in the CI artifact only. It has not been committed or approved. Audit suggested major-version fixes for some paths; assess Expo-compatible upgrades incrementally and verify devices, rather than forcing a major change. See [Expo SDK upgrade guidance](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/).
+- Native Android/iOS builds and mobile E2E remain unverified; S6 release remains blocked.
+
+## Historical observation — 2026-11-01
 - S6 CI run: https://github.com/karimnour920501-blip/black-K92NN-Wolf/actions/runs/41259757621
 - `npm audit --omit=dev --audit-level=high` on the locked Expo SDK 54 project: **31 advisories: 5 high, 25 moderate, 1 low**. Audit job failed.
 - `npm audit fix --force` offers breaking changes across Expo and expo-router. **Do not run it without a dedicated Expo migration/test review**.
